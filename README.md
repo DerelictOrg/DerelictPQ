@@ -1,7 +1,7 @@
 DerelictPQ
 ==========
 
-A dynamic binding to the [http://www.postgresql.org/docs/current/static/libpq.html](libpq) library version 9.3 for the D Programming Language.
+A dynamic binding to the [libpq](http://www.postgresql.org/docs/current/static/libpq.html) library version 9.3 for the D Programming Language.
 
 For information on how to build DerelictPQ and link it with your programs, please see the post [Building and Using Packages in DerelictOrg](http://dblog.aldacron.net/forum/index.php?topic=841.0) at the Derelict forums.
 
