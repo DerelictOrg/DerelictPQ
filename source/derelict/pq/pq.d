@@ -27,11 +27,6 @@ DEALINGS IN THE SOFTWARE.
 */
 module derelict.pq.pq;
 
-public {
-    import derelict.pq.types;
-    import derelict.pq.functions;
-}
-
 private {
     import derelict.util.loader;
     import derelict.util.system;
@@ -46,6 +41,497 @@ private {
     else
         static assert( 0, "Need to implement PostgreSQL libNames for this operating system." );
 }
+
+enum PQVersion {
+    PQ_910 = 90100,
+    PQ_911 = 90101,
+    PQ_912 = 90102,
+    PQ_913 = 90103,
+    PQ_914 = 90104,
+    PQ_915 = 90105,
+    PQ_916 = 90106,
+    PQ_917 = 90107,
+    PQ_918 = 90108,
+    PQ_920 = 90200,
+    PQ_921 = 90201,
+    PQ_922 = 90202,
+    PQ_923 = 90203,
+    PQ_930 = 90300,
+}
+
+extern(C) {
+    alias uint Oid;
+    alias char pqbool;
+    alias long pg_int64;
+    public import std.c.stdio : FILE;
+
+    enum PG_COPYRES_ATTRS       = 0x01;
+    enum PG_COPYRES_TUPLES      = 0x02;
+    enum PG_COPYRES_EVENTS      = 0x04;
+    enum PG_COPYRES_NOTICEHOOKS = 0x08;
+
+    enum valueFormat {
+        TEXT,
+        BINARY
+    }
+
+    enum ConnStatusType {
+        CONNECTION_OK,
+        CONNECTION_BAD,
+        CONNECTION_STARTED,
+        CONNECTION_MADE,
+        CONNECTION_AWAITIN_RESPONSE,
+        CONNECTION_AUTH_OK,
+        CONNECTION_SETENV,
+        CONNECTION_SSL_STARTUP,
+        CONNECTION_NEEDED
+    }
+
+    enum PostgresPollingStatusType {
+        PGRES_POLLING_FAILED = 0,
+        PGRES_POLLING_READING,
+        PGRES_POLLING_WRITING,
+        PGRES_POLLING_OK,
+        PGRES_POLLING_ACTIVE
+    }
+
+    enum ExecStatusType {
+        PGRES_EMPTY_QUERY = 0,
+        PGRES_COMMAND_OK,
+        PGRES_TUPLES_OK,
+        PGRES_COPY_OUT,
+        PGRES_COPY_IN,
+        PGRES_BAD_RESPONSE,
+        PGRES_NONFATAL_ERROR,
+        PGRES_FATAL_ERROR,
+        PGRES_COPY_BOTH,
+        PGRES_SINGLE_TUPLE
+    }
+
+    enum PGTransactionStatusType {
+        PQTRANS_IDLE,
+        PQTRANS_ACTIVE,
+        PQTRANS_INTRANS,
+        PQTRANS_INERROR,
+        PQTRANS_UNKNOWN
+    }
+
+    enum PGVerbosity {
+        PQERRORS_TERSE,
+        PQERRORS_DEFAULT,
+        PQERRORS_VERBOSE
+    }
+
+    enum PGPing {
+        PQPING_OK,
+        PQPING_REJECT,
+        PQPING_NO_RESPONSE,
+        PQPING_NO_ATTEMTP
+    }
+
+    struct PGconn;
+    struct PGresult;
+    struct PGcancel;
+
+    struct PGnotify {
+        char* relname;
+        int be_pid;
+        char* extra;
+        private PGnotify* next;
+    }
+
+    struct PQprintOpt {
+        pqbool header;
+        pqbool aligment;
+        pqbool standard;
+        pqbool html3;
+        pqbool expander;
+        pqbool pager;
+        char* fieldSep;
+        char* tableOpt;
+        char* caption;
+        char** fieldName;
+    }
+
+    struct PQconninfoOption {
+        char* keyword;
+        char* envvar;
+        char* compiled;
+        char* val;
+        char* label;
+        char* dispchar;
+        int dispsize;
+    }
+
+    struct PQArgBlock {
+        int len;
+        int ising;
+        union u
+        {
+            int* ptr;
+            int integer;
+        }
+    }
+
+    struct PGresAttDesc {
+        char* name;
+        Oid tableid;
+        int columnid;
+        int format;
+        Oid typid;
+        int typlen;
+        int atttypmod;
+    }
+
+    enum PGEventId {
+        PGEVT_REGISTER,
+        PGEVT_CONNRESET,
+        PGEVT_CONNDESTROY,
+        PGEVT_RESULTCREATE,
+        PGEVT_RESULTCOPY,
+        PGEVT_RESULTDESTROY
+    }
+
+    struct PGEventResultCreate {
+        PGconn* conn;
+        PGresult* result;
+    }
+
+    extern( C ) nothrow {
+        alias PQnoticeReceiver = void function( void* arg, PGresult* res );
+        alias PQnotcieProcessor = void function( void* arg, char* message );
+        alias pgthreadlock_t = void function( int acquire );
+        alias PGEventProc = size_t function( PGEventId evtId, void* evtInfo, void* passThrough );
+    }
+}
+
+
+extern(C) nothrow {
+    alias da_PQconnectStart = PGconn* function(char* connInfo);
+    alias da_PQconnectStartParams = PGconn* function(char** keywords, char** values, int expand_dbname);
+    alias da_PQconnectPoll = PostgresPollingStatusType function(PGconn* conn);
+
+    alias da_PQconnectdb = PGconn* function(immutable char* connInfo);
+    alias da_PQconnectdbParams = PGconn* function(char** keywords, char** values, int expand_dbname);
+    alias da_PQsetdbLogin = PGconn* function(char* pghost, char* pgport, char* pgoptions, char* pgtty, char* dbName, char* login, char* pwd);
+
+    alias da_PQfinish = void function(PGconn* conn);
+
+    alias da_PQconndefaults = PQconninfoOption* function();
+    alias da_PQconninfoParse = PQconninfoOption* function(char* conninfo, char** errmsg);
+    alias da_PQconninfo = PQconninfoOption* function(PGconn* conn);
+    alias da_PQconninfoFree = void function(PQconninfoOption* connOptions);
+
+    alias da_PQresetStart = int function(PGconn* conn);
+    alias da_PQresetPoll = PostgresPollingStatusType function(PGconn*);
+    alias da_PQreset = void function(PGconn* conn);
+
+    alias da_PQgetCancel = PGcancel* function(PGconn* conn);
+    alias da_PQfreeCancel = void function(PGcancel* cancel);
+    alias da_PQcancel = int function(PGcancel* cancel, char* errbuf, int errbufsize);
+    alias da_PQrequestCancel = int function(PGconn* conn);
+
+    alias da_PQdb = char* function(PGconn* conn);
+    alias da_PQuser = char* function(PGconn* conn);
+    alias da_PQpass = char* function(PGconn* conn);
+    alias da_PQhost = char* function(PGconn* conn);
+    alias da_PQport = char* function(PGconn* conn);
+    alias da_PQtty = char* function(PGconn* conn);
+    alias da_PQoptions = char* function(PGconn* conn);
+    alias da_PQstatus = ConnStatusType function(PGconn* conn);
+
+    alias da_PQtransactionStatus = PGTransactionStatusType function(PGconn* conn);
+    alias da_PQparameterStatus = char* function(PGconn* conn, char* paramName);
+    alias da_PQprotocolVersion = int function(PGconn* conn);
+    alias da_PQserverVersion = int function(PGconn* conn);
+    alias da_PQerrorMessage = char* function(PGconn* conn);
+    alias da_PQsocket = int function(PGconn* conn);
+    alias da_PQbackendPID = int function(PGconn* conn);
+    alias da_PQconnectionNeedsPassword = int function(PGconn* conn);
+    alias da_PQconnectionUsedPassword = int function(PGconn* conn);
+    alias da_PQclientEncoding = int function(PGconn* conn);
+    alias da_PQsetClientEncoding = int function(PGconn* conn, char* encoding);
+
+    alias da_PQgetssl = void* function(PGconn* conn);
+    alias da_PQinitSSL = void function(int do_init);
+    alias da_PQinitOpenSSL = void function(int do_ssl, int do_crypto);
+
+    alias da_PQsetErrorVerbosity = PGVerbosity function(PGconn conn, PGVerbosity verbosity);
+    alias da_PQtrace = void function(PGconn* conn, FILE* debug_port);
+    alias da_PQuntrace = void function(PGconn* conn);
+
+    alias da_PQsetNoticeReceiver = PQnoticeReceiver function(PGconn* conn, PQnoticeReceiver proc, void* arg);
+    alias da_PQsetNoticeProcessor = PQnotcieProcessor function(PGconn* conn, PQnotcieProcessor proc, void* arg);
+
+    alias da_PQregisterThreadLock = pgthreadlock_t function(pgthreadlock_t newhandler);
+
+    alias da_PQexec = PGresult* function(PGconn* conn, const(char)* query);
+    alias da_PQexecParams = PGresult* function(PGconn* conn, const(char)* command, int nParams, Oid* paramTypes, const(ubyte)** paramValues, int* paramLengths, int* paramFormats, int resultFormat);
+    alias da_PQprepare = PGresult* function(PGconn* conn, char* stmtName, char* query, int nParams, Oid* paramTypes);
+    alias da_PQexecPrepared = PGresult* function(PGconn* conn, char* stmtName, int nParams, char** paramValues, int* paramFormats, int resultFormat);
+    alias da_PQsendQuery = int function(PGconn* conn, const(char)* query);
+    alias da_PQsendQueryParams = int function(PGconn* conn, const(char)* command, int nParams, Oid* paramTypes, const(ubyte)** paramValues, int* paramLengths, int* paramFormats, int resultFormat);
+    alias da_PQsendPrepare = int function(PGconn* conn, char* stmtName, char* query, int nParams, Oid* paramTypes);
+    alias da_PQsendQueryPrepared = int function(PGconn* conn, char* stmtName, int nParams, char** paramValues, int* paramLengths, int* paramFormats, int resultFormat);
+    alias da_PQsetSingleRowMode = int function(PGconn* conn);
+    alias da_PQgetResult = PGresult* function(PGconn* conn);
+
+    alias da_PQisBusy = int function(PGconn* conn);
+    alias da_PQconsumeInput = int function(PGconn* conn);
+
+    alias da_PQnotifies = immutable (PGnotify)* function(PGconn* conn);
+
+    alias da_PQputCopyData = int function(PGconn* conn, char* buffer, int nbytes);
+    alias da_PQputCopyEnd = int function(PGconn* conn, char* errormsg);
+    alias da_PQgetCopyData = int function(PGconn* conn, char** buffer, int async);
+
+    alias da_PQgetline = int function(PGconn* conn, char* string, int length);
+    alias da_PQputline = int function(PGconn* conn, char* string);
+    alias da_PQgetlineAsync = int function(PGconn* conn, char* buffer, int bufsize);
+    alias da_PQputnbytes = int function(PGconn* conn, char* buffer, int nbytes);
+    alias da_PQendcopy = int function(PGconn* conn);
+
+    alias da_PQsetnonblocking = int function(PGconn* conn, int arg);
+    alias da_PQisnonblocking = int function(PGconn* conn);
+    alias da_PQisthreadsafe = int function();
+    alias da_PQping = PGPing function(char* conninfo);
+    alias da_PQpingParams = PGPing function(char** keywords, char** values, int expand_dbname);
+
+    alias da_PQflush = int function(PGconn* conn);
+
+    alias da_PQfn = PGresult* function(PGconn* conn, int fnid, int* result_buf, int* result_len, int result_is_int, PQArgBlock* args, int nargs);
+    alias da_PQresultStatus = ExecStatusType function(const(PGresult)* res);
+    alias da_PQresStatus = char* function(ExecStatusType status);
+    alias da_PQresultErrorMessage = char* function(const(PGresult)* res);
+    alias da_PQresultErrorField = char* function(PGresult* res, int fieldcode);
+    alias da_PQntuples = int function(const(PGresult)* res);
+    alias da_PQnfields = int function(const(PGresult)* res);
+    alias da_PQbinaryTuples = int function(PGresult* res);
+    alias da_PQfname = char* function(PGresult* res, int field_num);
+    alias da_PQfnumber = int function(const(PGresult)* res, immutable char* field_name);
+    alias da_PQftable = Oid function(PGresult* res, int field_num);
+    alias da_PQftablecol = int function(PGresult* res, int field_num);
+    alias da_PQfformat = valueFormat function(const(PGresult)* res, int field_num);
+    alias da_PQftype = Oid function(const(PGresult)* res, int field_num);
+    alias da_PQfsize = int function(PGresult* res, int field_num);
+    alias da_PQfmod = int function(PGresult* res, int field_num);
+    alias da_PQcmdStatus = char* function(const(PGresult)* res);
+    alias da_PQoidStatus = char* function(PGresult* res);
+    alias da_PQoidValue = Oid function(PGresult* res);
+    alias da_PQcmdTuples = char* function(PGresult* res);
+    alias da_PQgetvalue = immutable(ubyte)* function(const(PGresult)* res, int tup_num, int field_num);
+    alias da_PQgetlength = int function(const(PGresult)* res, int tup_num, int field_num);
+    alias da_PQgetisnull = int function(const(PGresult)* res, int tup_num, int field_num);
+    alias da_PQnparams = int function(PGresult* res);
+    alias da_PQparamtype = Oid function(PGresult* res, int param_num);
+
+    alias da_PQdescribePrepared = PGresult* function(PGconn* conn, char* stmt);
+    alias da_PQdescribePortal = PGresult* function(PGconn* conn, char* portal);
+    alias da_PQsendDescribePrepared = int function(PGconn* conn, char* stmt);
+    alias da_PQsendDescribePortal = int function(PGconn* conn, char* portal);
+
+    alias da_PQclear = void function(const(PGresult)* res);
+    alias da_PQfreemem = void function(void* ptr);
+
+    alias da_PQmakeEmptyPGresult = PGresult* function(PGconn* conn, ExecStatusType status);
+    alias da_PQcopyResult = PGresult* function(const(PGresult)* src, int flags);
+    alias da_PQsetResultAttrs = int function(PGresult* res, int numAttributes, PGresAttDesc* attDescs);
+    alias da_PQresultAlloc = void* function(PGresult* res, size_t nBytes);
+    alias da_PQsetvalue = int function(PGresult* res, int tup_num, int field_num, char* value, int len);
+
+    alias da_PQescapeStringConn = size_t function(PGconn* conn, char* to, char* from, size_t length, int* error);
+    alias da_PQescapeLiteral = char* function(PGconn* conn, const(char)* str, size_t len);
+    alias da_PQescapeIdentifier = char* function(PGconn* conn, const(char)* str, size_t length);
+    alias da_PQescapeByteaConn = ubyte* function(PGconn* conn, ubyte* from, size_t from_length, size_t* to_length);
+    alias da_PQunescapeBytea = ubyte* function(ubyte* strtext, size_t* retbuflen);
+
+    alias da_PQescapeString = size_t function(char* to, char* from, size_t length);
+    alias da_PQescapeBytea = ubyte* function(ubyte* from, size_t from_length, size_t* to_length);
+
+    alias da_PQprint = void function(FILE* fout, PGresult* res, PQprintOpt* ps);
+    alias da_PQdisplayTuples = void function(PGresult* res, FILE* fp, int fillAlign, char* fieldSep, int printHeader, int quiet);
+    alias da_PQprintTuples = void function(PGresult* res, FILE* fout, int printAttName, int terseOutput, int width);
+
+    alias da_lo_open = int function(PGconn* conn, Oid lobjId, int mode);
+    alias da_lo_close = int function(PGconn* conn, int fd);
+    alias da_lo_read = int function(PGconn* conn, int fd, char* fuf, size_t len);
+    alias da_lo_write = int function(PGconn* conn, int fd, const(char)* buf, size_t len);
+    alias da_lo_lseek = int function(PGconn* conn, int fd, int offset, int whence);
+    alias da_lo_lseek64 = pg_int64 function(PGconn* conn, int fd, pg_int64 offset, int whence);
+    alias da_lo_creat = Oid function(PGconn* conn, int mode);
+    alias da_lo_create = Oid function(PGconn* conn, Oid lobjId);
+    alias da_lo_tell = int function(PGconn* conn, int fd);
+    alias da_lo_tell64 = pg_int64 function(PGconn* conn, int fd);
+    alias da_lo_truncate = int function(PGconn* conn, int fd, size_t len);
+    alias da_lo_truncate64 = int function(PGconn* conn, int fd, pg_int64 len);
+    alias da_lo_unlink = int function(PGconn* conn, Oid lobjId);
+    alias da_lo_import = Oid function(PGconn* conn, const(char)* filename);
+    alias da_lo_import_with_oid = Oid function(PGconn* conn, const(char)* filename, Oid lobjId);
+    alias da_lo_export = int function(PGconn* conn, Oid lobjId, const(char)* filename);
+
+    alias da_PQlibVersion = int function();
+    alias da_PQmblen = int function(char* s, int encoding);
+    alias da_PQdsplen = int function(char* s, int encoding);
+    alias da_PQenv2encoding = int function();
+    alias da_PQencryptPassword = char* function(char* passwd, char* user);
+
+    alias da_pg_char_to_encoding = int function(const(char)* name);
+    alias da_pg_encoding_to_char = const(char)* function(int encoding);
+    alias da_pg_valid_server_encoding_id = int function(int encoding);
+
+    alias da_PQregisterEventProc = int function(PGconn* conn, PGEventProc proc, immutable char* name, void* passThrough);
+    alias da_PQsetInstanceData = int function(PGconn* conn, PGEventProc proc, void* data);
+}
+
+__gshared
+{
+    da_PQconnectStart PQconnectStart;
+    da_PQconnectStartParams PQconnectStartParams;
+    da_PQconnectPoll PQconnectPoll;
+    da_PQconnectdb PQconnectdb;
+    da_PQconnectdbParams PQconnectdbParams;
+    da_PQsetdbLogin PQsetdbLogin;
+    da_PQfinish PQfinish;
+    da_PQconndefaults PQconndefaults;
+    da_PQconninfoParse PQconninfoParse;
+    da_PQconninfo PQconninfo;
+    da_PQconninfoFree PQconninfoFree;
+    da_PQresetStart PQresetStart;
+    da_PQresetPoll PQresetPoll;
+    da_PQreset PQreset;
+    da_PQgetCancel PQgetCancel;
+    da_PQfreeCancel PQfreeCancel;
+    da_PQcancel PQcancel;
+    da_PQrequestCancel PQrequestCancel;
+    da_PQdb PQdb;
+    da_PQuser PQuser;
+    da_PQpass PQpass;
+    da_PQhost PQhost;
+    da_PQport PQport;
+    da_PQtty PQtty;
+    da_PQoptions PQoptions;
+    da_PQstatus PQstatus;
+    da_PQtransactionStatus PQtransactionStatus;
+    da_PQparameterStatus PQparameterStatus;
+    da_PQprotocolVersion PQprotocolVersion;
+    da_PQserverVersion PQserverVersion;
+    da_PQerrorMessage PQerrorMessage;
+    da_PQsocket PQsocket;
+    da_PQbackendPID PQbackendPID;
+    da_PQconnectionNeedsPassword PQconnectionNeedsPassword;
+    da_PQconnectionUsedPassword PQconnectionUsedPassword;
+    da_PQclientEncoding PQclientEncoding;
+    da_PQsetClientEncoding PQsetClientEncoding;
+    da_PQgetssl PQgetssl;
+    da_PQinitSSL PQinitSSL;
+    da_PQinitOpenSSL PQinitOpenSSL;
+    da_PQsetErrorVerbosity PQsetErrorVerbosity;
+    da_PQtrace PQtrace;
+    da_PQuntrace PQuntrace;
+    da_PQsetNoticeReceiver PQsetNoticeReceiver;
+    da_PQsetNoticeProcessor PQsetNoticeProcessor;
+    da_PQregisterThreadLock PQregisterThreadLock;
+    da_PQexec PQexec;
+    da_PQexecParams PQexecParams;
+    da_PQprepare PQprepare;
+    da_PQexecPrepared PQexecPrepared;
+    da_PQsendQuery PQsendQuery;
+    da_PQsendQueryParams PQsendQueryParams;
+    da_PQsendPrepare PQsendPrepare;
+    da_PQsendQueryPrepared PQsendQueryPrepared;
+    da_PQsetSingleRowMode PQsetSingleRowMode;
+    da_PQgetResult PQgetResult;
+    da_PQisBusy PQisBusy;
+    da_PQconsumeInput PQconsumeInput;
+    da_PQnotifies PQnotifies;
+    da_PQputCopyData PQputCopyData;
+    da_PQputCopyEnd PQputCopyEnd;
+    da_PQgetCopyData PQgetCopyData;
+    da_PQgetline PQgetline;
+    da_PQputline PQputline;
+    da_PQgetlineAsync PQgetlineAsync;
+    da_PQputnbytes PQputnbytes;
+    da_PQendcopy PQendcopy;
+    da_PQsetnonblocking PQsetnonblocking;
+    da_PQisnonblocking PQisnonblocking;
+    da_PQisthreadsafe PQisthreadsafe;
+    da_PQping PQping;
+    da_PQpingParams PQpingParams;
+    da_PQflush PQflush;
+    da_PQfn PQfn;
+    da_PQresultStatus PQresultStatus;
+    da_PQresStatus PQresStatus;
+    da_PQresultErrorMessage PQresultErrorMessage;
+    da_PQresultErrorField PQresultErrorField;
+    da_PQntuples PQntuples;
+    da_PQnfields PQnfields;
+    da_PQbinaryTuples PQbinaryTuples;
+    da_PQfname PQfname;
+    da_PQfnumber PQfnumber;
+    da_PQftable PQftable;
+    da_PQftablecol PQftablecol;
+    da_PQfformat PQfformat;
+    da_PQftype PQftype;
+    da_PQfsize PQfsize;
+    da_PQfmod PQfmod;
+    da_PQcmdStatus PQcmdStatus;
+    da_PQoidStatus PQoidStatus;
+    da_PQoidValue PQoidValue;
+    da_PQcmdTuples PQcmdTuples;
+    da_PQgetvalue PQgetvalue;
+    da_PQgetlength PQgetlength;
+    da_PQgetisnull PQgetisnull;
+    da_PQnparams PQnparams;
+    da_PQparamtype PQparamtype;
+    da_PQdescribePrepared PQdescribePrepared;
+    da_PQdescribePortal PQdescribePortal;
+    da_PQsendDescribePrepared PQsendDescribePrepared;
+    da_PQsendDescribePortal PQsendDescribePortal;
+    da_PQclear PQclear;
+    da_PQfreemem PQfreemem;
+    da_PQmakeEmptyPGresult PQmakeEmptyPGresult;
+    da_PQcopyResult PQcopyResult;
+    da_PQsetResultAttrs PQsetResultAttrs;
+    da_PQresultAlloc PQresultAlloc;
+    da_PQsetvalue PQsetvalue;
+    da_PQescapeStringConn PQescapeStringConn;
+    da_PQescapeLiteral PQescapeLiteral;
+    da_PQescapeIdentifier PQescapeIdentifier;
+    da_PQescapeByteaConn PQescapeByteaConn;
+    da_PQunescapeBytea PQunescapeBytea;
+    da_PQescapeString PQescapeString;
+    da_PQescapeBytea PQescapeBytea;
+    da_PQprint PQprint;
+    da_PQdisplayTuples PQdisplayTuples;
+    da_PQprintTuples PQprintTuples;
+    da_lo_open lo_open;
+    da_lo_close lo_close;
+    da_lo_read lo_read;
+    da_lo_write lo_write;
+    da_lo_lseek lo_lseek;
+    da_lo_lseek64 lo_lseek64;
+    da_lo_creat lo_creat;
+    da_lo_create lo_create;
+    da_lo_tell lo_tell;
+    da_lo_tell64 lo_tell64;
+    da_lo_truncate lo_truncate;
+    da_lo_truncate64 lo_truncate64;
+    da_lo_unlink lo_unlink;
+    da_lo_import lo_import;
+    da_lo_import_with_oid lo_import_with_oid;
+    da_lo_export lo_export;
+    da_PQlibVersion PQlibVersion;
+    da_PQmblen PQmblen;
+    da_PQdsplen PQdsplen;
+    da_PQenv2encoding PQenv2encoding;
+    da_PQencryptPassword PQencryptPassword;
+    da_pg_char_to_encoding pg_char_to_encoding;
+    da_pg_encoding_to_char pg_encoding_to_char;
+    da_pg_valid_server_encoding_id pg_valid_server_encoding_id;
+    da_PQregisterEventProc PQregisterEventProc;
+    da_PQsetInstanceData PQsetInstanceData;
+}
+
 
 class DerelictPQLoader : SharedLibLoader {
     public this() {
