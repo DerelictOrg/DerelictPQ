@@ -11,7 +11,7 @@ For information on how to load the libpq library via DerelictPQ, see the page [D
 import derelict.pq.pq;
 
 void main() {
-    // Load the PhysicsFS library.
+    // Load the Postgres library.
     DerelictPQ.load();
 
     // Now libpq functions can be called.
