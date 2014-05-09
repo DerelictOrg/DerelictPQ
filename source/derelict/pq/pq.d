@@ -256,7 +256,7 @@ extern(C) nothrow {
     alias da_PQinitSSL = void function(int do_init);
     alias da_PQinitOpenSSL = void function(int do_ssl, int do_crypto);
 
-    alias da_PQsetErrorVerbosity = PGVerbosity function(PGconn conn, PGVerbosity verbosity);
+    alias da_PQsetErrorVerbosity = PGVerbosity function(PGconn* conn, PGVerbosity verbosity);
     alias da_PQtrace = void function(PGconn* conn, FILE* debug_port);
     alias da_PQuntrace = void function(PGconn* conn);
 
