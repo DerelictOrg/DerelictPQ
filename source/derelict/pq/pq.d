@@ -199,7 +199,7 @@ extern(C) {
 
     extern( C ) nothrow {
         alias PQnoticeReceiver = void function( void* arg, PGresult* res );
-        alias PQnotcieProcessor = void function( void* arg, char* message );
+        alias PQnoticeProcessor = void function( void* arg, char* message );
         alias pgthreadlock_t = void function( int acquire );
         alias PGEventProc = size_t function( PGEventId evtId, void* evtInfo, void* passThrough );
     }
