@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/DerelictOrg/DerelictPQ.svg?branch=master)](https://travis-ci.org/DerelictOrg/DerelictPQ)
+
 DerelictPQ
 ==========
 
