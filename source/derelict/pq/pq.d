@@ -261,7 +261,7 @@ extern(C) nothrow {
     alias da_PQuntrace = void function(PGconn* conn);
 
     alias da_PQsetNoticeReceiver = PQnoticeReceiver function(PGconn* conn, PQnoticeReceiver proc, void* arg);
-    alias da_PQsetNoticeProcessor = PQnotcieProcessor function(PGconn* conn, PQnotcieProcessor proc, void* arg);
+    alias da_PQsetNoticeProcessor = PQnoticeProcessor function(PGconn* conn, PQnoticeProcessor proc, void* arg);
 
     alias da_PQregisterThreadLock = pgthreadlock_t function(pgthreadlock_t newhandler);
 
