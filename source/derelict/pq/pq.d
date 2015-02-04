@@ -268,7 +268,7 @@ extern(C) nothrow {
     alias da_PQexec = PGresult* function(PGconn* conn, const(char)* query);
     alias da_PQexecParams = PGresult* function(PGconn* conn, const(char)* command, int nParams, Oid* paramTypes, const(ubyte)** paramValues, int* paramLengths, int* paramFormats, int resultFormat);
     alias da_PQprepare = PGresult* function(PGconn* conn, char* stmtName, char* query, int nParams, Oid* paramTypes);
-    alias da_PQexecPrepared = PGresult* function(PGconn* conn, char* stmtName, int nParams, char** paramValues, int* paramFormats, int resultFormat);
+    alias da_PQexecPrepared = PGresult* function(PGconn* conn, char* stmtName, int nParams, char** paramValues, int* paramLengths, int* paramFormats, int resultFormat);
     alias da_PQsendQuery = int function(PGconn* conn, const(char)* query);
     alias da_PQsendQueryParams = int function(PGconn* conn, const(char)* command, int nParams, Oid* paramTypes, const(ubyte)** paramValues, int* paramLengths, int* paramFormats, int resultFormat);
     alias da_PQsendPrepare = int function(PGconn* conn, char* stmtName, char* query, int nParams, Oid* paramTypes);
