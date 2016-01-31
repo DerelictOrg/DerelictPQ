@@ -63,7 +63,7 @@ extern(C) {
     alias uint Oid;
     alias char pqbool;
     alias long pg_int64;
-    public import std.c.stdio : FILE;
+    public import core.stdc.stdio : FILE;
 
     enum PG_COPYRES_ATTRS       = 0x01;
     enum PG_COPYRES_TUPLES      = 0x02;
