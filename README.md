@@ -17,6 +17,6 @@ void main() {
 }
 ```
 
-[1]: http://www.postgresql.org/docs/current/static/libpq.html
+[1]: http://www.postgresql.org/docs/9.3/static/libpq.html
 [2]: http://derelictorg.github.io/compiling.html
 [3]: http://derelictorg.github.io/using.html
