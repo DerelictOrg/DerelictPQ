@@ -42,171 +42,179 @@ private {
         static assert( 0, "Need to implement PostgreSQL libNames for this operating system." );
 }
 
-enum PQVersion {
-    PQ_910 = 90100,
-    PQ_911 = 90101,
-    PQ_912 = 90102,
-    PQ_913 = 90103,
-    PQ_914 = 90104,
-    PQ_915 = 90105,
-    PQ_916 = 90106,
-    PQ_917 = 90107,
-    PQ_918 = 90108,
-    PQ_920 = 90200,
-    PQ_921 = 90201,
-    PQ_922 = 90202,
-    PQ_923 = 90203,
-    PQ_930 = 90300,
+alias Oid = uint;
+alias pqbool = char;
+alias pg_int64 = long;
+public import core.stdc.stdio : FILE;
+
+enum {
+    PG_COPYRES_ATTRS       = 0x01,
+    PG_COPYRES_TUPLES      = 0x02,
+    PG_COPYRES_EVENTS      = 0x04,
+    PG_COPYRES_NOTICEHOOKS = 0x08,
 }
 
-extern(C) {
-    alias uint Oid;
-    alias char pqbool;
-    alias long pg_int64;
-    public import std.c.stdio : FILE;
+alias ConnStatusType = int;
+enum {
+    CONNECTION_OK,
+    CONNECTION_BAD,
+    CONNECTION_STARTED,
+    CONNECTION_MADE,
+    CONNECTION_AWAITIN_RESPONSE,
+    CONNECTION_AUTH_OK,
+    CONNECTION_SETENV,
+    CONNECTION_SSL_STARTUP,
+    CONNECTION_NEEDED
+}
 
-    enum PG_COPYRES_ATTRS       = 0x01;
-    enum PG_COPYRES_TUPLES      = 0x02;
-    enum PG_COPYRES_EVENTS      = 0x04;
-    enum PG_COPYRES_NOTICEHOOKS = 0x08;
+alias PostgresPollingStatusType = int;
+enum {
+    PGRES_POLLING_FAILED = 0,
+    PGRES_POLLING_READING,
+    PGRES_POLLING_WRITING,
+    PGRES_POLLING_OK,
+    PGRES_POLLING_ACTIVE
+}
 
-    enum valueFormat {
-        TEXT,
-        BINARY
-    }
+alias ExecStatusType = int;
+enum {
+    PGRES_EMPTY_QUERY = 0,
+    PGRES_COMMAND_OK,
+    PGRES_TUPLES_OK,
+    PGRES_COPY_OUT,
+    PGRES_COPY_IN,
+    PGRES_BAD_RESPONSE,
+    PGRES_NONFATAL_ERROR,
+    PGRES_FATAL_ERROR,
+    PGRES_COPY_BOTH,
+    PGRES_SINGLE_TUPLE
+}
 
-    enum ConnStatusType {
-        CONNECTION_OK,
-        CONNECTION_BAD,
-        CONNECTION_STARTED,
-        CONNECTION_MADE,
-        CONNECTION_AWAITIN_RESPONSE,
-        CONNECTION_AUTH_OK,
-        CONNECTION_SETENV,
-        CONNECTION_SSL_STARTUP,
-        CONNECTION_NEEDED
-    }
+alias PGTransactionStatusType = int;
+enum {
+    PQTRANS_IDLE,
+    PQTRANS_ACTIVE,
+    PQTRANS_INTRANS,
+    PQTRANS_INERROR,
+    PQTRANS_UNKNOWN
+}
 
-    enum PostgresPollingStatusType {
-        PGRES_POLLING_FAILED = 0,
-        PGRES_POLLING_READING,
-        PGRES_POLLING_WRITING,
-        PGRES_POLLING_OK,
-        PGRES_POLLING_ACTIVE
-    }
+alias PGVerbosity = int;
+enum {
+    PQERRORS_TERSE,
+    PQERRORS_DEFAULT,
+    PQERRORS_VERBOSE
+}
 
-    enum ExecStatusType {
-        PGRES_EMPTY_QUERY = 0,
-        PGRES_COMMAND_OK,
-        PGRES_TUPLES_OK,
-        PGRES_COPY_OUT,
-        PGRES_COPY_IN,
-        PGRES_BAD_RESPONSE,
-        PGRES_NONFATAL_ERROR,
-        PGRES_FATAL_ERROR,
-        PGRES_COPY_BOTH,
-        PGRES_SINGLE_TUPLE
-    }
+alias PGPing = int;
+enum {
+    PQPING_OK,
+    PQPING_REJECT,
+    PQPING_NO_RESPONSE,
+    PQPING_NO_ATTEMTP
+}
 
-    enum PGTransactionStatusType {
-        PQTRANS_IDLE,
-        PQTRANS_ACTIVE,
-        PQTRANS_INTRANS,
-        PQTRANS_INERROR,
-        PQTRANS_UNKNOWN
-    }
+struct PGconn;
+struct PGresult;
+struct PGcancel;
 
-    enum PGVerbosity {
-        PQERRORS_TERSE,
-        PQERRORS_DEFAULT,
-        PQERRORS_VERBOSE
-    }
+struct PGnotify {
+    char* relname;
+    int be_pid;
+    char* extra;
+    private PGnotify* next;
+}
 
-    enum PGPing {
-        PQPING_OK,
-        PQPING_REJECT,
-        PQPING_NO_RESPONSE,
-        PQPING_NO_ATTEMTP
-    }
+extern( C ) @nogc nothrow {
+    alias PQnoticeReceiver = void function( void*,PGresult* );
+    alias PQnoticeProcessor = void function( void*,char* );
+}
 
-    struct PGconn;
-    struct PGresult;
-    struct PGcancel;
+struct PQprintOpt {
+    pqbool header;
+    pqbool aligment;
+    pqbool standard;
+    pqbool html3;
+    pqbool expander;
+    pqbool pager;
+    char* fieldSep;
+    char* tableOpt;
+    char* caption;
+    char** fieldName;
+}
 
-    struct PGnotify {
-        char* relname;
-        int be_pid;
-        char* extra;
-        private PGnotify* next;
-    }
+struct PQconninfoOption {
+    char* keyword;
+    char* envvar;
+    char* compiled;
+    char* val;
+    char* label;
+    char* dispchar;
+    int dispsize;
+}
 
-    struct PQprintOpt {
-        pqbool header;
-        pqbool aligment;
-        pqbool standard;
-        pqbool html3;
-        pqbool expander;
-        pqbool pager;
-        char* fieldSep;
-        char* tableOpt;
-        char* caption;
-        char** fieldName;
-    }
-
-    struct PQconninfoOption {
-        char* keyword;
-        char* envvar;
-        char* compiled;
-        char* val;
-        char* label;
-        char* dispchar;
-        int dispsize;
-    }
-
-    struct PQArgBlock {
-        int len;
-        int ising;
-        union u
-        {
-            int* ptr;
-            int integer;
-        }
-    }
-
-    struct PGresAttDesc {
-        char* name;
-        Oid tableid;
-        int columnid;
-        int format;
-        Oid typid;
-        int typlen;
-        int atttypmod;
-    }
-
-    enum PGEventId {
-        PGEVT_REGISTER,
-        PGEVT_CONNRESET,
-        PGEVT_CONNDESTROY,
-        PGEVT_RESULTCREATE,
-        PGEVT_RESULTCOPY,
-        PGEVT_RESULTDESTROY
-    }
-
-    struct PGEventResultCreate {
-        PGconn* conn;
-        PGresult* result;
-    }
-
-    extern( C ) nothrow {
-        alias PQnoticeReceiver = void function( void*,PGresult* );
-        alias PQnoticeProcessor = void function( void*,char* );
-        alias pgthreadlock_t = void function( int );
-        alias PGEventProc = size_t function( PGEventId,void*,void* );
+struct PQArgBlock {
+    int len;
+    int ising;
+    union u
+    {
+        int* ptr;
+        int integer;
     }
 }
 
+struct PGresAttDesc {
+    char* name;
+    Oid tableid;
+    int columnid;
+    int format;
+    Oid typid;
+    int typlen;
+    int atttypmod;
+}
 
-extern( C ) nothrow {
+alias PGEventId = int;
+enum {
+    PGEVT_REGISTER,
+    PGEVT_CONNRESET,
+    PGEVT_CONNDESTROY,
+    PGEVT_RESULTCREATE,
+    PGEVT_RESULTCOPY,
+    PGEVT_RESULTDESTROY
+}
+
+struct PGEventResultCreate {
+    PGconn* conn;
+    PGresult* result;
+}
+
+extern( C ) @nogc nothrow {
+    alias pgthreadlock_t = void function( int );
+    alias PGEventProc = size_t function( PGEventId,void*,void* );
+}
+
+// from postgres_ext.h
+enum : int {
+    PG_DIAG_SEVERITY =          'S',
+    PG_DIAG_SQLSTATE =          'C',
+    PG_DIAG_MESSAGE_PRIMARY =   'M',
+    PG_DIAG_MESSAGE_DETAIL =    'D',
+    PG_DIAG_MESSAGE_HINT =      'H',
+    PG_DIAG_STATEMENT_POSITION ='P',
+    PG_DIAG_INTERNAL_POSITION = 'p',
+    PG_DIAG_INTERNAL_QUERY =    'q',
+    PG_DIAG_CONTEXT =           'W',
+    PG_DIAG_SCHEMA_NAME =       's',
+    PG_DIAG_TABLE_NAME =        't',
+    PG_DIAG_COLUMN_NAME =       'c',
+    PG_DIAG_DATATYPE_NAME =     'd',
+    PG_DIAG_CONSTRAINT_NAME =   'n',
+    PG_DIAG_SOURCE_FILE =       'F',
+    PG_DIAG_SOURCE_LINE =       'L',
+    PG_DIAG_SOURCE_FUNCTION =   'R'
+}  
+
+extern( C ) @nogc nothrow {
     alias da_PQconnectStart = PGconn* function( char* );
     alias da_PQconnectStartParams = PGconn* function( char**,char**,int );
     alias da_PQconnectPoll = PostgresPollingStatusType function( PGconn* );
@@ -311,7 +319,7 @@ extern( C ) nothrow {
     alias da_PQfnumber = int function( const( PGresult )*,const( char )* );
     alias da_PQftable = Oid function( PGresult*,int );
     alias da_PQftablecol = int function( PGresult*,int );
-    alias da_PQfformat = valueFormat function( const( PGresult )*,int );
+    alias da_PQfformat = int function( const( PGresult )*,int );
     alias da_PQftype = Oid function( const( PGresult )*,int );
     alias da_PQfsize = int function( PGresult*,int );
     alias da_PQfmod = int function( PGresult*,int );
