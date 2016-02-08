@@ -311,11 +311,11 @@ extern( C ) @nogc nothrow {
     alias da_PQresultStatus = ExecStatusType function( const( PGresult )* );
     alias da_PQresStatus = char* function( ExecStatusType );
     alias da_PQresultErrorMessage = char* function( const( PGresult )* );
-    alias da_PQresultErrorField = char* function( PGresult*,int );
+    alias da_PQresultErrorField = char* function( const( PGresult )*,int );
     alias da_PQntuples = int function( const( PGresult )* );
     alias da_PQnfields = int function( const( PGresult )* );
     alias da_PQbinaryTuples = int function( PGresult* );
-    alias da_PQfname = char* function( PGresult*,int );
+    alias da_PQfname = char* function( const( PGresult )*,int );
     alias da_PQfnumber = int function( const( PGresult )*,const( char )* );
     alias da_PQftable = Oid function( PGresult*,int );
     alias da_PQftablecol = int function( PGresult*,int );
