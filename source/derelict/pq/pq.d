@@ -32,14 +32,14 @@ private {
     import derelict.util.system;
     import derelict.util.exception;
 
-    static if( Derelict_OS_Windows )
+    static if(Derelict_OS_Windows)
         enum libNames = "libpq.dll";
-    else static if( Derelict_OS_Mac )
+    else static if(Derelict_OS_Mac)
         enum libNames = "libpq.dylib";
-    else static if( Derelict_OS_Posix )
+    else static if(Derelict_OS_Posix)
         enum libNames = "libpq.so";
     else
-        static assert( 0, "Need to implement PostgreSQL libNames for this operating system." );
+        static assert(0, "Need to implement PostgreSQL libNames for this operating system.");
 }
 
 alias Oid = uint;
@@ -125,9 +125,9 @@ struct PGnotify {
     private PGnotify* next;
 }
 
-extern( C ) @nogc nothrow {
-    alias PQnoticeReceiver = void function( void*,PGresult* );
-    alias PQnoticeProcessor = void function( void*,char* );
+extern(C) @nogc nothrow {
+    alias PQnoticeReceiver = void function(void*,PGresult*);
+    alias PQnoticeProcessor = void function(void*,char*);
 }
 
 struct PQprintOpt {
@@ -188,9 +188,9 @@ struct PGEventResultCreate {
     PGresult* result;
 }
 
-extern( C ) @nogc nothrow {
-    alias pgthreadlock_t = void function( int );
-    alias PGEventProc = size_t function( PGEventId,void*,void* );
+extern(C) @nogc nothrow {
+    alias pgthreadlock_t = void function(int);
+    alias PGEventProc = size_t function(PGEventId,void*,void*);
 }
 
 // from postgres_ext.h
@@ -214,184 +214,183 @@ enum : int {
     PG_DIAG_SOURCE_FUNCTION =   'R'
 }  
 
-extern( C ) @nogc nothrow {
-    alias da_PQconnectStart = PGconn* function( const(char)* );
-    alias da_PQconnectStartParams = PGconn* function( const(char*)*,const(char*)*,int );
-    alias da_PQconnectPoll = PostgresPollingStatusType function( PGconn* );
+extern(C) @nogc nothrow {
+    alias da_PQconnectStart = PGconn* function(const(char)*);
+    alias da_PQconnectStartParams = PGconn* function(const(char*)*,const(char*)*,int);
+    alias da_PQconnectPoll = PostgresPollingStatusType function(PGconn*);
 
-    alias da_PQconnectdb = PGconn* function( const(  char  )*  );
-    alias da_PQconnectdbParams = PGconn* function( const(char*)*,const(char*)*,int );
-    alias da_PQsetdbLogin = PGconn* function( const(char)*,const(char)*,const(char)*,const(char)*,const(char)*,const(char)*,const(char)* );
+    alias da_PQconnectdb = PGconn* function(const( char )* );
+    alias da_PQconnectdbParams = PGconn* function(const(char*)*,const(char*)*,int);
+    alias da_PQsetdbLogin = PGconn* function(const(char)*,const(char)*,const(char)*,const(char)*,const(char)*,const(char)*,const(char)*);
 
-    alias da_PQfinish = void function( PGconn* );
+    alias da_PQfinish = void function(PGconn*);
 
-    alias da_PQconndefaults = PQconninfoOption* function(  );
-    alias da_PQconninfoParse = PQconninfoOption* function( const(char)*,char** );
-    alias da_PQconninfo = PQconninfoOption* function( PGconn* );
-    alias da_PQconninfoFree = void function( PQconninfoOption* );
+    alias da_PQconndefaults = PQconninfoOption* function();
+    alias da_PQconninfoParse = PQconninfoOption* function(const(char)*,char**);
+    alias da_PQconninfo = PQconninfoOption* function(PGconn*);
+    alias da_PQconninfoFree = void function(PQconninfoOption*);
 
-    alias da_PQresetStart = int function( PGconn* );
-    alias da_PQresetPoll = PostgresPollingStatusType function( PGconn* );
-    alias da_PQreset = void function( PGconn* );
+    alias da_PQresetStart = int function(PGconn*);
+    alias da_PQresetPoll = PostgresPollingStatusType function(PGconn*);
+    alias da_PQreset = void function(PGconn*);
 
-    alias da_PQgetCancel = PGcancel* function( PGconn* );
-    alias da_PQfreeCancel = void function( PGcancel* );
-    alias da_PQcancel = int function( PGcancel*,char*,int );
-    alias da_PQrequestCancel = int function( PGconn* );
+    alias da_PQgetCancel = PGcancel* function(PGconn*);
+    alias da_PQfreeCancel = void function(PGcancel*);
+    alias da_PQcancel = int function(PGcancel*,char*,int);
+    alias da_PQrequestCancel = int function(PGconn*);
 
-    alias da_PQdb = char* function( const(PGconn)* );
-    alias da_PQuser = char* function( const(PGconn)* );
-    alias da_PQpass = char* function( const(PGconn)* );
-    alias da_PQhost = char* function( const(PGconn)* );
-    alias da_PQport = char* function( const(PGconn)* );
-    alias da_PQtty = char* function( const(PGconn)* );
-    alias da_PQoptions = char* function( const(PGconn)* );
-    alias da_PQstatus = ConnStatusType function( const(PGconn)* );
-    alias da_PQtransactionStatus = PGTransactionStatusType function( const(PGconn)* );
-    alias da_PQparameterStatus = char* function( const(PGconn)*,const(char)* );
-    alias da_PQprotocolVersion = int function( const(PGconn)* );
-    alias da_PQserverVersion = int function( const(PGconn)* );
-    alias da_PQerrorMessage = char* function( const(PGconn)* );
-    alias da_PQsocket = int function( const(PGconn)* );
-    alias da_PQbackendPID = int function( const(PGconn)* );
-    alias da_PQconnectionNeedsPassword = int function( const(PGconn)* );
-    alias da_PQconnectionUsedPassword = int function( const(PGconn)* );
-    alias da_PQclientEncoding = int function( const(PGconn)* );
-    alias da_PQsetClientEncoding = int function( PGconn*,char* );
+    alias da_PQdb = char* function(const(PGconn)*);
+    alias da_PQuser = char* function(const(PGconn)*);
+    alias da_PQpass = char* function(const(PGconn)*);
+    alias da_PQhost = char* function(const(PGconn)*);
+    alias da_PQport = char* function(const(PGconn)*);
+    alias da_PQtty = char* function(const(PGconn)*);
+    alias da_PQoptions = char* function(const(PGconn)*);
+    alias da_PQstatus = ConnStatusType function(const(PGconn)*);
+    alias da_PQtransactionStatus = PGTransactionStatusType function(const(PGconn)*);
+    alias da_PQparameterStatus = char* function(const(PGconn)*,const(char)*);
+    alias da_PQprotocolVersion = int function(const(PGconn)*);
+    alias da_PQserverVersion = int function(const(PGconn)*);
+    alias da_PQerrorMessage = char* function(const(PGconn)*);
+    alias da_PQsocket = int function(const(PGconn)*);
+    alias da_PQbackendPID = int function(const(PGconn)*);
+    alias da_PQconnectionNeedsPassword = int function(const(PGconn)*);
+    alias da_PQconnectionUsedPassword = int function(const(PGconn)*);
+    alias da_PQclientEncoding = int function(const(PGconn)*);
+    alias da_PQsetClientEncoding = int function(PGconn*,char*);
 
-    alias da_PQgetssl = void* function( PGconn* );
-    alias da_PQinitSSL = void function( int );
-    alias da_PQinitOpenSSL = void function( int,int );
+    alias da_PQgetssl = void* function(PGconn*);
+    alias da_PQinitSSL = void function(int);
+    alias da_PQinitOpenSSL = void function(int,int);
 
-    alias da_PQsetErrorVerbosity = PGVerbosity function( PGconn*,PGVerbosity );
-    alias da_PQtrace = void function( PGconn*,FILE* );
-    alias da_PQuntrace = void function( PGconn* );
+    alias da_PQsetErrorVerbosity = PGVerbosity function(PGconn*,PGVerbosity);
+    alias da_PQtrace = void function(PGconn*,FILE*);
+    alias da_PQuntrace = void function(PGconn*);
 
-    alias da_PQsetNoticeReceiver = PQnoticeReceiver function( PGconn*,PQnoticeReceiver,void* );
-    alias da_PQsetNoticeProcessor = PQnoticeProcessor function( PGconn*,PQnoticeProcessor,void* );
+    alias da_PQsetNoticeReceiver = PQnoticeReceiver function(PGconn*,PQnoticeReceiver,void*);
+    alias da_PQsetNoticeProcessor = PQnoticeProcessor function(PGconn*,PQnoticeProcessor,void*);
 
-    alias da_PQregisterThreadLock = pgthreadlock_t function( pgthreadlock_t );
+    alias da_PQregisterThreadLock = pgthreadlock_t function(pgthreadlock_t);
 
-    alias da_PQexec = PGresult* function( PGconn*,const( char )* );
-    alias da_PQexecParams = PGresult* function( PGconn*,const( char )*,int,Oid*,const( char* )*,int*,int*,int );
-    alias da_PQprepare = PGresult* function( PGconn*,char*,char*,int,Oid* );
-    alias da_PQexecPrepared = PGresult* function( PGconn*,const(char)*,int,const(char*)*,const(int)*,const(int)*,int );
-    alias da_PQsendQuery = int function( PGconn*,const( char )* );
-    alias da_PQsendQueryParams = int function( PGconn*,const( char )*,int,Oid*,const( char* )*,int*,int*,int );
-    alias da_PQsendPrepare = int function( PGconn*,const(char)*,const(char)*,int,Oid* );
-    alias da_PQsendQueryPrepared = int function( PGconn*,const(char)*,int,const(char*)*,int*,int*,int );
-    alias da_PQsetSingleRowMode = int function( PGconn* );
-    alias da_PQgetResult = PGresult* function( PGconn* );
+    alias da_PQexec = PGresult* function(PGconn*,const(char)*);
+    alias da_PQexecParams = PGresult* function(PGconn*,const(char)*,int,Oid*,const(char*)*,int*,int*,int);
+    alias da_PQprepare = PGresult* function(PGconn*,char*,char*,int,Oid*);
+    alias da_PQexecPrepared = PGresult* function(PGconn*,const(char)*,int,const(char*)*,const(int)*,const(int)*,int);
+    alias da_PQsendQuery = int function(PGconn*,const(char)*);
+    alias da_PQsendQueryParams = int function(PGconn*,const(char)*,int,Oid*,const(char*)*,int*,int*,int);
+    alias da_PQsendPrepare = int function(PGconn*,const(char)*,const(char)*,int,Oid*);
+    alias da_PQsendQueryPrepared = int function(PGconn*,const(char)*,int,const(char*)*,int*,int*,int);
+    alias da_PQsetSingleRowMode = int function(PGconn*);
+    alias da_PQgetResult = PGresult* function(PGconn*);
 
-    alias da_PQisBusy = int function( PGconn* );
-    alias da_PQconsumeInput = int function( PGconn* );
+    alias da_PQisBusy = int function(PGconn*);
+    alias da_PQconsumeInput = int function(PGconn*);
 
-    alias da_PQnotifies = immutable ( PGnotify )* function( PGconn* );
+    alias da_PQnotifies = immutable (PGnotify)* function(PGconn*);
 
-    alias da_PQputCopyData = int function( PGconn*,const(char)*,int );
-    alias da_PQputCopyEnd = int function( PGconn*,const(char)* );
-    alias da_PQgetCopyData = int function( PGconn*,char**,int );
+    alias da_PQputCopyData = int function(PGconn*,const(char)*,int);
+    alias da_PQputCopyEnd = int function(PGconn*,const(char)*);
+    alias da_PQgetCopyData = int function(PGconn*,char**,int);
 
-    alias da_PQgetline = int function( PGconn*,char*,int );
-    alias da_PQputline = int function( PGconn*,const(char)* );
-    alias da_PQgetlineAsync = int function( PGconn*,char*,int );
-    alias da_PQputnbytes = int function( PGconn*,const(char)*,int );
-    alias da_PQendcopy = int function( PGconn* );
+    alias da_PQgetline = int function(PGconn*,char*,int);
+    alias da_PQputline = int function(PGconn*,const(char)*);
+    alias da_PQgetlineAsync = int function(PGconn*,char*,int);
+    alias da_PQputnbytes = int function(PGconn*,const(char)*,int);
+    alias da_PQendcopy = int function(PGconn*);
 
-    alias da_PQsetnonblocking = int function( PGconn*,int );
-    alias da_PQisnonblocking = int function( PGconn* );
-    alias da_PQisthreadsafe = int function(  );
-    alias da_PQping = PGPing function( const(char)* );
-    alias da_PQpingParams = PGPing function( const(char*)*,const(char*)*,int );
+    alias da_PQsetnonblocking = int function(PGconn*,int);
+    alias da_PQisnonblocking = int function(PGconn*);
+    alias da_PQisthreadsafe = int function();
+    alias da_PQping = PGPing function(const(char)*);
+    alias da_PQpingParams = PGPing function(const(char*)*,const(char*)*,int);
 
-    alias da_PQflush = int function( PGconn* );
+    alias da_PQflush = int function(PGconn*);
 
-    alias da_PQfn = PGresult* function( PGconn*,int,int*,int*,int,PQArgBlock*,int );
-    alias da_PQresultStatus = ExecStatusType function( const( PGresult )* );
-    alias da_PQresStatus = char* function( ExecStatusType );
-    alias da_PQresultErrorMessage = char* function( const( PGresult )* );
-    alias da_PQresultErrorField = char* function( const(PGresult)*,int );
-    alias da_PQntuples = int function( const( PGresult )* );
-    alias da_PQnfields = int function( const( PGresult )* );
-    alias da_PQbinaryTuples = int function( const(PGresult)* );
-    alias da_PQfname = char* function( const(PGresult)*,int );
-    alias da_PQfnumber = int function( const( PGresult )*,const( char )* );
-    alias da_PQftable = Oid function( PGresult*,int );
-    alias da_PQftablecol = int function( const(PGresult)*,int );
-    alias da_PQfformat = int function( const( PGresult )*,int );
-    alias da_PQftype = Oid function( const( PGresult )*,int );
-    alias da_PQfsize = int function( const(PGresult)*,int );
-    alias da_PQfmod = int function( const(PGresult)*,int );
-    alias da_PQcmdStatus = char* function( const( PGresult )* );
-    alias da_PQoidStatus = char* function( PGresult* );
-    alias da_PQoidValue = Oid function( const(PGresult)* );
-    alias da_PQcmdTuples = char* function( PGresult* );
-    alias da_PQgetvalue = const( ubyte )* function( const( PGresult )*,int,int );
-    alias da_PQgetlength = int function( const( PGresult )*,int,int );
-    alias da_PQgetisnull = int function( const( PGresult )*,int,int );
-    alias da_PQnparams = int function( const(PGresult)* );
-    alias da_PQparamtype = Oid function( const(PGresult)*,int );
+    alias da_PQfn = PGresult* function(PGconn*,int,int*,int*,int,PQArgBlock*,int);
+    alias da_PQresultStatus = ExecStatusType function(const(PGresult)*);
+    alias da_PQresStatus = char* function(ExecStatusType);
+    alias da_PQresultErrorMessage = char* function(const(PGresult)*);
+    alias da_PQresultErrorField = char* function(const(PGresult)*,int);
+    alias da_PQntuples = int function(const(PGresult)*);
+    alias da_PQnfields = int function(const(PGresult)*);
+    alias da_PQbinaryTuples = int function(const(PGresult)*);
+    alias da_PQfname = char* function(const(PGresult)*,int);
+    alias da_PQfnumber = int function(const(PGresult)*,const(char)*);
+    alias da_PQftable = Oid function(PGresult*,int);
+    alias da_PQftablecol = int function(const(PGresult)*,int);
+    alias da_PQfformat = int function(const(PGresult)*,int);
+    alias da_PQftype = Oid function(const(PGresult)*,int);
+    alias da_PQfsize = int function(const(PGresult)*,int);
+    alias da_PQfmod = int function(const(PGresult)*,int);
+    alias da_PQcmdStatus = char* function(const(PGresult)*);
+    alias da_PQoidStatus = char* function(PGresult*);
+    alias da_PQoidValue = Oid function(const(PGresult)*);
+    alias da_PQcmdTuples = char* function(PGresult*);
+    alias da_PQgetvalue = const(ubyte)* function(const(PGresult)*,int,int);
+    alias da_PQgetlength = int function(const(PGresult)*,int,int);
+    alias da_PQgetisnull = int function(const(PGresult)*,int,int);
+    alias da_PQnparams = int function(const(PGresult)*);
+    alias da_PQparamtype = Oid function(const(PGresult)*,int);
 
-    alias da_PQdescribePrepared = PGresult* function( PGconn*,char* );
-    alias da_PQdescribePortal = PGresult* function( PGconn*,char* );
-    alias da_PQsendDescribePrepared = int function( PGconn*,char* );
-    alias da_PQsendDescribePortal = int function( PGconn*,char* );
+    alias da_PQdescribePrepared = PGresult* function(PGconn*,char*);
+    alias da_PQdescribePortal = PGresult* function(PGconn*,char*);
+    alias da_PQsendDescribePrepared = int function(PGconn*,char*);
+    alias da_PQsendDescribePortal = int function(PGconn*,char*);
 
-    alias da_PQclear = void function( const( PGresult )* );
-    alias da_PQfreemem = void function( void* );
+    alias da_PQclear = void function(const(PGresult)*);
+    alias da_PQfreemem = void function(void*);
 
-    alias da_PQmakeEmptyPGresult = PGresult* function( PGconn*,ExecStatusType );
-    alias da_PQcopyResult = PGresult* function( const( PGresult )*,int );
-    alias da_PQsetResultAttrs = int function( PGresult*,int,PGresAttDesc* );
-    alias da_PQresultAlloc = void* function( PGresult*,size_t );
-    alias da_PQsetvalue = int function( PGresult*,int,int,char*,int );
+    alias da_PQmakeEmptyPGresult = PGresult* function(PGconn*,ExecStatusType);
+    alias da_PQcopyResult = PGresult* function(const(PGresult)*,int);
+    alias da_PQsetResultAttrs = int function(PGresult*,int,PGresAttDesc*);
+    alias da_PQresultAlloc = void* function(PGresult*,size_t);
+    alias da_PQsetvalue = int function(PGresult*,int,int,char*,int);
 
-    alias da_PQescapeStringConn = size_t function( PGconn*,char*,char*,size_t,int* );
-    alias da_PQescapeLiteral = char* function( PGconn*,const( char )*,size_t );
-    alias da_PQescapeIdentifier = char* function( PGconn*,const( char )*,size_t );
-    alias da_PQescapeByteaConn = ubyte* function( PGconn*,ubyte*,size_t,size_t* );
-    alias da_PQunescapeBytea = ubyte* function( ubyte*,size_t* );
+    alias da_PQescapeStringConn = size_t function(PGconn*,char*,char*,size_t,int*);
+    alias da_PQescapeLiteral = char* function(PGconn*,const(char)*,size_t);
+    alias da_PQescapeIdentifier = char* function(PGconn*,const(char)*,size_t);
+    alias da_PQescapeByteaConn = ubyte* function(PGconn*,ubyte*,size_t,size_t*);
+    alias da_PQunescapeBytea = ubyte* function(ubyte*,size_t*);
 
-    alias da_PQescapeString = size_t function( char*,char*,size_t );
-    alias da_PQescapeBytea = ubyte* function( ubyte*,size_t,size_t* );
+    alias da_PQescapeString = size_t function(char*,char*,size_t);
+    alias da_PQescapeBytea = ubyte* function(ubyte*,size_t,size_t*);
 
-    alias da_PQprint = void function( FILE*,PGresult*,PQprintOpt* );
-    alias da_PQdisplayTuples = void function( PGresult*,FILE*,int,char*,int,int );
-    alias da_PQprintTuples = void function( PGresult*,FILE*,int,int,int );
+    alias da_PQprint = void function(FILE*,PGresult*,PQprintOpt*);
+    alias da_PQdisplayTuples = void function(PGresult*,FILE*,int,char*,int,int);
+    alias da_PQprintTuples = void function(PGresult*,FILE*,int,int,int);
 
-    alias da_lo_open = int function( PGconn*,Oid,int );
-    alias da_lo_close = int function( PGconn*,int );
-    alias da_lo_read = int function( PGconn*,int,char*,size_t );
-    alias da_lo_write = int function( PGconn*,int,const( char )*,size_t );
-    alias da_lo_lseek = int function( PGconn*,int,int,int );
-    alias da_lo_lseek64 = pg_int64 function( PGconn*,int,pg_int64,int );
-    alias da_lo_creat = Oid function( PGconn*,int );
-    alias da_lo_create = Oid function( PGconn*,Oid );
-    alias da_lo_tell = int function( PGconn*,int );
-    alias da_lo_tell64 = pg_int64 function( PGconn*,int );
-    alias da_lo_truncate = int function( PGconn*,int,size_t );
-    alias da_lo_truncate64 = int function( PGconn*,int,pg_int64 );
-    alias da_lo_unlink = int function( PGconn*,Oid );
-    alias da_lo_import = Oid function( PGconn*,const( char )* );
-    alias da_lo_import_with_oid = Oid function( PGconn*,const( char )*,Oid );
-    alias da_lo_export = int function( PGconn*,Oid,const( char )* );
+    alias da_lo_open = int function(PGconn*,Oid,int);
+    alias da_lo_close = int function(PGconn*,int);
+    alias da_lo_read = int function(PGconn*,int,char*,size_t);
+    alias da_lo_write = int function(PGconn*,int,const(char)*,size_t);
+    alias da_lo_lseek = int function(PGconn*,int,int,int);
+    alias da_lo_lseek64 = pg_int64 function(PGconn*,int,pg_int64,int);
+    alias da_lo_creat = Oid function(PGconn*,int);
+    alias da_lo_create = Oid function(PGconn*,Oid);
+    alias da_lo_tell = int function(PGconn*,int);
+    alias da_lo_tell64 = pg_int64 function(PGconn*,int);
+    alias da_lo_truncate = int function(PGconn*,int,size_t);
+    alias da_lo_truncate64 = int function(PGconn*,int,pg_int64);
+    alias da_lo_unlink = int function(PGconn*,Oid);
+    alias da_lo_import = Oid function(PGconn*,const(char)*);
+    alias da_lo_import_with_oid = Oid function(PGconn*,const(char)*,Oid);
+    alias da_lo_export = int function(PGconn*,Oid,const(char)*);
 
-    alias da_PQlibVersion = int function(  );
-    alias da_PQmblen = int function( char*,int );
-    alias da_PQdsplen = int function( char*,int );
-    alias da_PQenv2encoding = int function(  );
-    alias da_PQencryptPassword = char* function( char*,char* );
+    alias da_PQlibVersion = int function();
+    alias da_PQmblen = int function(char*,int);
+    alias da_PQdsplen = int function(char*,int);
+    alias da_PQenv2encoding = int function();
+    alias da_PQencryptPassword = char* function(char*,char*);
 
-    alias da_pg_char_to_encoding = int function( const( char )* );
-    alias da_pg_encoding_to_char = const( char )* function( int );
-    alias da_pg_valid_server_encoding_id = int function( int );
+    alias da_pg_char_to_encoding = int function(const(char)*);
+    alias da_pg_encoding_to_char = const(char)* function(int);
+    alias da_pg_valid_server_encoding_id = int function(int);
 
-    alias da_PQregisterEventProc = int function( PGconn*,PGEventProc,const( char )*,void* );
-    alias da_PQsetInstanceData = int function( PGconn*,PGEventProc,void* );
+    alias da_PQregisterEventProc = int function(PGconn*,PGEventProc,const(char)*,void*);
+    alias da_PQsetInstanceData = int function(PGconn*,PGEventProc,void*);
 }
 
-__gshared
-{
+__gshared {
     da_PQconnectStart PQconnectStart;
     da_PQconnectStartParams PQconnectStartParams;
     da_PQconnectPoll PQconnectPoll;
@@ -542,156 +541,156 @@ __gshared
 
 class DerelictPQLoader : SharedLibLoader {
     public this() {
-        super( libNames );
+        super(libNames);
     }
 
     protected override void loadSymbols()
     {
-        bindFunc( cast( void** )&PQconnectStart, "PQconnectStart" );
-        bindFunc( cast( void** )&PQconnectStartParams, "PQconnectStartParams" );
-        bindFunc( cast( void** )&PQconnectPoll, "PQconnectPoll" );
-        bindFunc( cast( void** )&PQconnectdb, "PQconnectdb" );
-        bindFunc( cast( void** )&PQconnectdbParams, "PQconnectdbParams" );
-        bindFunc( cast( void** )&PQsetdbLogin, "PQsetdbLogin" );
-        bindFunc( cast( void** )&PQfinish, "PQfinish" );
-        bindFunc( cast( void** )&PQconndefaults, "PQconndefaults" );
-        bindFunc( cast( void** )&PQconninfoParse, "PQconninfoParse" );
-        bindFunc( cast( void** )&PQconninfoFree, "PQconninfoFree" );
-        bindFunc( cast( void** )&PQresetStart, "PQresetStart" );
-        bindFunc( cast( void** )&PQresetPoll, "PQresetPoll" );
-        bindFunc( cast( void** )&PQreset, "PQreset" );
-        bindFunc( cast( void** )&PQgetCancel, "PQgetCancel" );
-        bindFunc( cast( void** )&PQfreeCancel, "PQfreeCancel" );
-        bindFunc( cast( void** )&PQcancel, "PQcancel" );
-        bindFunc( cast( void** )&PQrequestCancel, "PQrequestCancel" );
-        bindFunc( cast( void** )&PQdb, "PQdb" );
-        bindFunc( cast( void** )&PQuser, "PQuser" );
-        bindFunc( cast( void** )&PQpass, "PQpass" );
-        bindFunc( cast( void** )&PQhost, "PQhost" );
-        bindFunc( cast( void** )&PQport, "PQport" );
-        bindFunc( cast( void** )&PQtty, "PQtty" );
-        bindFunc( cast( void** )&PQoptions, "PQoptions" );
-        bindFunc( cast( void** )&PQstatus, "PQstatus" );
-        bindFunc( cast( void** )&PQtransactionStatus, "PQtransactionStatus" );
-        bindFunc( cast( void** )&PQparameterStatus, "PQparameterStatus" );
-        bindFunc( cast( void** )&PQprotocolVersion, "PQprotocolVersion" );
-        bindFunc( cast( void** )&PQserverVersion, "PQserverVersion" );
-        bindFunc( cast( void** )&PQerrorMessage, "PQerrorMessage" );
-        bindFunc( cast( void** )&PQsocket, "PQsocket" );
-        bindFunc( cast( void** )&PQbackendPID, "PQbackendPID" );
-        bindFunc( cast( void** )&PQconnectionNeedsPassword, "PQconnectionNeedsPassword" );
-        bindFunc( cast( void** )&PQconnectionUsedPassword, "PQconnectionUsedPassword" );
-        bindFunc( cast( void** )&PQclientEncoding, "PQclientEncoding" );
-        bindFunc( cast( void** )&PQsetClientEncoding, "PQsetClientEncoding" );
-        bindFunc( cast( void** )&PQgetssl, "PQgetssl" );
-        bindFunc( cast( void** )&PQinitSSL, "PQinitSSL" );
-        bindFunc( cast( void** )&PQinitOpenSSL, "PQinitOpenSSL" );
-        bindFunc( cast( void** )&PQsetErrorVerbosity, "PQsetErrorVerbosity" );
-        bindFunc( cast( void** )&PQtrace, "PQtrace" );
-        bindFunc( cast( void** )&PQuntrace, "PQuntrace" );
-        bindFunc( cast( void** )&PQsetNoticeReceiver, "PQsetNoticeReceiver" );
-        bindFunc( cast( void** )&PQsetNoticeProcessor, "PQsetNoticeProcessor" );
-        bindFunc( cast( void** )&PQregisterThreadLock, "PQregisterThreadLock" );
-        bindFunc( cast( void** )&PQexec, "PQexec" );
-        bindFunc( cast( void** )&PQexecParams, "PQexecParams" );
-        bindFunc( cast( void** )&PQprepare, "PQprepare" );
-        bindFunc( cast( void** )&PQexecPrepared, "PQexecPrepared" );
-        bindFunc( cast( void** )&PQsendQuery, "PQsendQuery" );
-        bindFunc( cast( void** )&PQsendQueryParams, "PQsendQueryParams" );
-        bindFunc( cast( void** )&PQsendPrepare, "PQsendPrepare" );
-        bindFunc( cast( void** )&PQsendQueryPrepared, "PQsendQueryPrepared" );
-        bindFunc( cast( void** )&PQgetResult, "PQgetResult" );
-        bindFunc( cast( void** )&PQisBusy, "PQisBusy" );
-        bindFunc( cast( void** )&PQconsumeInput, "PQconsumeInput" );
-        bindFunc( cast( void** )&PQnotifies, "PQnotifies" );
-        bindFunc( cast( void** )&PQputCopyData, "PQputCopyData" );
-        bindFunc( cast( void** )&PQputCopyEnd, "PQputCopyEnd" );
-        bindFunc( cast( void** )&PQgetCopyData, "PQgetCopyData" );
-        bindFunc( cast( void** )&PQgetline, "PQgetline" );
-        bindFunc( cast( void** )&PQputline, "PQputline" );
-        bindFunc( cast( void** )&PQgetlineAsync, "PQgetlineAsync" );
-        bindFunc( cast( void** )&PQputnbytes, "PQputnbytes" );
-        bindFunc( cast( void** )&PQendcopy, "PQendcopy" );
-        bindFunc( cast( void** )&PQsetnonblocking, "PQsetnonblocking" );
-        bindFunc( cast( void** )&PQisnonblocking, "PQisnonblocking" );
-        bindFunc( cast( void** )&PQisthreadsafe, "PQisthreadsafe" );
-        bindFunc( cast( void** )&PQping, "PQping" );
-        bindFunc( cast( void** )&PQpingParams, "PQpingParams" );
-        bindFunc( cast( void** )&PQflush, "PQflush" );
-        bindFunc( cast( void** )&PQfn, "PQfn" );
-        bindFunc( cast( void** )&PQresultStatus, "PQresultStatus" );
-        bindFunc( cast( void** )&PQresStatus, "PQresStatus" );
-        bindFunc( cast( void** )&PQresultErrorMessage, "PQresultErrorMessage" );
-        bindFunc( cast( void** )&PQresultErrorField, "PQresultErrorField" );
-        bindFunc( cast( void** )&PQntuples, "PQntuples" );
-        bindFunc( cast( void** )&PQnfields, "PQnfields" );
-        bindFunc( cast( void** )&PQbinaryTuples, "PQbinaryTuples" );
-        bindFunc( cast( void** )&PQfname, "PQfname" );
-        bindFunc( cast( void** )&PQfnumber, "PQfnumber" );
-        bindFunc( cast( void** )&PQftable, "PQftable" );
-        bindFunc( cast( void** )&PQftablecol, "PQftablecol" );
-        bindFunc( cast( void** )&PQfformat, "PQfformat" );
-        bindFunc( cast( void** )&PQftype, "PQftype" );
-        bindFunc( cast( void** )&PQfsize, "PQfsize" );
-        bindFunc( cast( void** )&PQfmod, "PQfmod" );
-        bindFunc( cast( void** )&PQcmdStatus, "PQcmdStatus" );
-        bindFunc( cast( void** )&PQoidStatus, "PQoidStatus" );
-        bindFunc( cast( void** )&PQoidValue, "PQoidValue" );
-        bindFunc( cast( void** )&PQcmdTuples, "PQcmdTuples" );
-        bindFunc( cast( void** )&PQgetvalue, "PQgetvalue" );
-        bindFunc( cast( void** )&PQgetlength, "PQgetlength" );
-        bindFunc( cast( void** )&PQgetisnull, "PQgetisnull" );
-        bindFunc( cast( void** )&PQnparams, "PQnparams" );
-        bindFunc( cast( void** )&PQparamtype, "PQparamtype" );
-        bindFunc( cast( void** )&PQdescribePrepared, "PQdescribePrepared" );
-        bindFunc( cast( void** )&PQdescribePortal, "PQdescribePortal" );
-        bindFunc( cast( void** )&PQsendDescribePrepared, "PQsendDescribePrepared" );
-        bindFunc( cast( void** )&PQsendDescribePortal, "PQsendDescribePortal" );
-        bindFunc( cast( void** )&PQclear, "PQclear" );
-        bindFunc( cast( void** )&PQfreemem, "PQfreemem" );
-        bindFunc( cast( void** )&PQmakeEmptyPGresult, "PQmakeEmptyPGresult" );
-        bindFunc( cast( void** )&PQcopyResult, "PQcopyResult" );
-        bindFunc( cast( void** )&PQsetResultAttrs, "PQsetResultAttrs" );
-        bindFunc( cast( void** )&PQresultAlloc, "PQresultAlloc" );
-        bindFunc( cast( void** )&PQsetvalue, "PQsetvalue" );
-        bindFunc( cast( void** )&PQescapeStringConn, "PQescapeStringConn" );
-        bindFunc( cast( void** )&PQescapeLiteral, "PQescapeLiteral" );
-        bindFunc( cast( void** )&PQescapeIdentifier, "PQescapeIdentifier" );
-        bindFunc( cast( void** )&PQescapeByteaConn, "PQescapeByteaConn" );
-        bindFunc( cast( void** )&PQunescapeBytea, "PQunescapeBytea" );
-        bindFunc( cast( void** )&PQescapeString, "PQescapeString" );
-        bindFunc( cast( void** )&PQescapeBytea, "PQescapeBytea" );
-        bindFunc( cast( void** )&PQprint, "PQprint" );
-        bindFunc( cast( void** )&PQdisplayTuples, "PQdisplayTuples" );
-        bindFunc( cast( void** )&PQprintTuples, "PQprintTuples" );
-        bindFunc( cast( void** )&lo_open, "lo_open" );
-        bindFunc( cast( void** )&lo_close, "lo_close" );
-        bindFunc( cast( void** )&lo_read, "lo_read" );
-        bindFunc( cast( void** )&lo_write, "lo_write" );
-        bindFunc( cast( void** )&lo_lseek, "lo_lseek" );
-        bindFunc( cast( void** )&lo_creat, "lo_creat" );
-        bindFunc( cast( void** )&lo_create, "lo_create" );
-        bindFunc( cast( void** )&lo_tell, "lo_tell" );
-        bindFunc( cast( void** )&lo_truncate, "lo_truncate" );
-        bindFunc( cast( void** )&lo_unlink, "lo_unlink" );
-        bindFunc( cast( void** )&lo_import, "lo_import" );
-        bindFunc( cast( void** )&lo_import_with_oid, "lo_import_with_oid" );
-        bindFunc( cast( void** )&lo_export, "lo_export" );
-        bindFunc( cast( void** )&PQlibVersion, "PQlibVersion" );
-        bindFunc( cast( void** )&PQmblen, "PQmblen" );
-        bindFunc( cast( void** )&PQdsplen, "PQdsplen" );
-        bindFunc( cast( void** )&PQenv2encoding, "PQenv2encoding" );
-        bindFunc( cast( void** )&PQencryptPassword, "PQencryptPassword" );
-        bindFunc( cast( void** )&pg_char_to_encoding, "pg_char_to_encoding" );
-        bindFunc( cast( void** )&pg_encoding_to_char, "pg_encoding_to_char" );
-        bindFunc( cast( void** )&pg_valid_server_encoding_id, "pg_valid_server_encoding_id" );
-        bindFunc( cast( void** )&PQregisterEventProc, "PQregisterEventProc" );
-        bindFunc( cast( void** )&PQsetInstanceData, "PQsetInstanceData" );
-        bindFunc( cast( void** )&PQsetSingleRowMode, "PQsetSingleRowMode" );
-        bindFunc( cast( void** )&PQconninfo, "PQconninfo" );
-        bindFunc( cast( void** )&lo_lseek64, "lo_lseek64" );
-        bindFunc( cast( void** )&lo_tell64, "lo_tell64" );
-        bindFunc( cast( void** )&lo_truncate64, "lo_truncate64" );
+        bindFunc(cast(void**)&PQconnectStart, "PQconnectStart");
+        bindFunc(cast(void**)&PQconnectStartParams, "PQconnectStartParams");
+        bindFunc(cast(void**)&PQconnectPoll, "PQconnectPoll");
+        bindFunc(cast(void**)&PQconnectdb, "PQconnectdb");
+        bindFunc(cast(void**)&PQconnectdbParams, "PQconnectdbParams");
+        bindFunc(cast(void**)&PQsetdbLogin, "PQsetdbLogin");
+        bindFunc(cast(void**)&PQfinish, "PQfinish");
+        bindFunc(cast(void**)&PQconndefaults, "PQconndefaults");
+        bindFunc(cast(void**)&PQconninfoParse, "PQconninfoParse");
+        bindFunc(cast(void**)&PQconninfoFree, "PQconninfoFree");
+        bindFunc(cast(void**)&PQresetStart, "PQresetStart");
+        bindFunc(cast(void**)&PQresetPoll, "PQresetPoll");
+        bindFunc(cast(void**)&PQreset, "PQreset");
+        bindFunc(cast(void**)&PQgetCancel, "PQgetCancel");
+        bindFunc(cast(void**)&PQfreeCancel, "PQfreeCancel");
+        bindFunc(cast(void**)&PQcancel, "PQcancel");
+        bindFunc(cast(void**)&PQrequestCancel, "PQrequestCancel");
+        bindFunc(cast(void**)&PQdb, "PQdb");
+        bindFunc(cast(void**)&PQuser, "PQuser");
+        bindFunc(cast(void**)&PQpass, "PQpass");
+        bindFunc(cast(void**)&PQhost, "PQhost");
+        bindFunc(cast(void**)&PQport, "PQport");
+        bindFunc(cast(void**)&PQtty, "PQtty");
+        bindFunc(cast(void**)&PQoptions, "PQoptions");
+        bindFunc(cast(void**)&PQstatus, "PQstatus");
+        bindFunc(cast(void**)&PQtransactionStatus, "PQtransactionStatus");
+        bindFunc(cast(void**)&PQparameterStatus, "PQparameterStatus");
+        bindFunc(cast(void**)&PQprotocolVersion, "PQprotocolVersion");
+        bindFunc(cast(void**)&PQserverVersion, "PQserverVersion");
+        bindFunc(cast(void**)&PQerrorMessage, "PQerrorMessage");
+        bindFunc(cast(void**)&PQsocket, "PQsocket");
+        bindFunc(cast(void**)&PQbackendPID, "PQbackendPID");
+        bindFunc(cast(void**)&PQconnectionNeedsPassword, "PQconnectionNeedsPassword");
+        bindFunc(cast(void**)&PQconnectionUsedPassword, "PQconnectionUsedPassword");
+        bindFunc(cast(void**)&PQclientEncoding, "PQclientEncoding");
+        bindFunc(cast(void**)&PQsetClientEncoding, "PQsetClientEncoding");
+        bindFunc(cast(void**)&PQgetssl, "PQgetssl");
+        bindFunc(cast(void**)&PQinitSSL, "PQinitSSL");
+        bindFunc(cast(void**)&PQinitOpenSSL, "PQinitOpenSSL");
+        bindFunc(cast(void**)&PQsetErrorVerbosity, "PQsetErrorVerbosity");
+        bindFunc(cast(void**)&PQtrace, "PQtrace");
+        bindFunc(cast(void**)&PQuntrace, "PQuntrace");
+        bindFunc(cast(void**)&PQsetNoticeReceiver, "PQsetNoticeReceiver");
+        bindFunc(cast(void**)&PQsetNoticeProcessor, "PQsetNoticeProcessor");
+        bindFunc(cast(void**)&PQregisterThreadLock, "PQregisterThreadLock");
+        bindFunc(cast(void**)&PQexec, "PQexec");
+        bindFunc(cast(void**)&PQexecParams, "PQexecParams");
+        bindFunc(cast(void**)&PQprepare, "PQprepare");
+        bindFunc(cast(void**)&PQexecPrepared, "PQexecPrepared");
+        bindFunc(cast(void**)&PQsendQuery, "PQsendQuery");
+        bindFunc(cast(void**)&PQsendQueryParams, "PQsendQueryParams");
+        bindFunc(cast(void**)&PQsendPrepare, "PQsendPrepare");
+        bindFunc(cast(void**)&PQsendQueryPrepared, "PQsendQueryPrepared");
+        bindFunc(cast(void**)&PQgetResult, "PQgetResult");
+        bindFunc(cast(void**)&PQisBusy, "PQisBusy");
+        bindFunc(cast(void**)&PQconsumeInput, "PQconsumeInput");
+        bindFunc(cast(void**)&PQnotifies, "PQnotifies");
+        bindFunc(cast(void**)&PQputCopyData, "PQputCopyData");
+        bindFunc(cast(void**)&PQputCopyEnd, "PQputCopyEnd");
+        bindFunc(cast(void**)&PQgetCopyData, "PQgetCopyData");
+        bindFunc(cast(void**)&PQgetline, "PQgetline");
+        bindFunc(cast(void**)&PQputline, "PQputline");
+        bindFunc(cast(void**)&PQgetlineAsync, "PQgetlineAsync");
+        bindFunc(cast(void**)&PQputnbytes, "PQputnbytes");
+        bindFunc(cast(void**)&PQendcopy, "PQendcopy");
+        bindFunc(cast(void**)&PQsetnonblocking, "PQsetnonblocking");
+        bindFunc(cast(void**)&PQisnonblocking, "PQisnonblocking");
+        bindFunc(cast(void**)&PQisthreadsafe, "PQisthreadsafe");
+        bindFunc(cast(void**)&PQping, "PQping");
+        bindFunc(cast(void**)&PQpingParams, "PQpingParams");
+        bindFunc(cast(void**)&PQflush, "PQflush");
+        bindFunc(cast(void**)&PQfn, "PQfn");
+        bindFunc(cast(void**)&PQresultStatus, "PQresultStatus");
+        bindFunc(cast(void**)&PQresStatus, "PQresStatus");
+        bindFunc(cast(void**)&PQresultErrorMessage, "PQresultErrorMessage");
+        bindFunc(cast(void**)&PQresultErrorField, "PQresultErrorField");
+        bindFunc(cast(void**)&PQntuples, "PQntuples");
+        bindFunc(cast(void**)&PQnfields, "PQnfields");
+        bindFunc(cast(void**)&PQbinaryTuples, "PQbinaryTuples");
+        bindFunc(cast(void**)&PQfname, "PQfname");
+        bindFunc(cast(void**)&PQfnumber, "PQfnumber");
+        bindFunc(cast(void**)&PQftable, "PQftable");
+        bindFunc(cast(void**)&PQftablecol, "PQftablecol");
+        bindFunc(cast(void**)&PQfformat, "PQfformat");
+        bindFunc(cast(void**)&PQftype, "PQftype");
+        bindFunc(cast(void**)&PQfsize, "PQfsize");
+        bindFunc(cast(void**)&PQfmod, "PQfmod");
+        bindFunc(cast(void**)&PQcmdStatus, "PQcmdStatus");
+        bindFunc(cast(void**)&PQoidStatus, "PQoidStatus");
+        bindFunc(cast(void**)&PQoidValue, "PQoidValue");
+        bindFunc(cast(void**)&PQcmdTuples, "PQcmdTuples");
+        bindFunc(cast(void**)&PQgetvalue, "PQgetvalue");
+        bindFunc(cast(void**)&PQgetlength, "PQgetlength");
+        bindFunc(cast(void**)&PQgetisnull, "PQgetisnull");
+        bindFunc(cast(void**)&PQnparams, "PQnparams");
+        bindFunc(cast(void**)&PQparamtype, "PQparamtype");
+        bindFunc(cast(void**)&PQdescribePrepared, "PQdescribePrepared");
+        bindFunc(cast(void**)&PQdescribePortal, "PQdescribePortal");
+        bindFunc(cast(void**)&PQsendDescribePrepared, "PQsendDescribePrepared");
+        bindFunc(cast(void**)&PQsendDescribePortal, "PQsendDescribePortal");
+        bindFunc(cast(void**)&PQclear, "PQclear");
+        bindFunc(cast(void**)&PQfreemem, "PQfreemem");
+        bindFunc(cast(void**)&PQmakeEmptyPGresult, "PQmakeEmptyPGresult");
+        bindFunc(cast(void**)&PQcopyResult, "PQcopyResult");
+        bindFunc(cast(void**)&PQsetResultAttrs, "PQsetResultAttrs");
+        bindFunc(cast(void**)&PQresultAlloc, "PQresultAlloc");
+        bindFunc(cast(void**)&PQsetvalue, "PQsetvalue");
+        bindFunc(cast(void**)&PQescapeStringConn, "PQescapeStringConn");
+        bindFunc(cast(void**)&PQescapeLiteral, "PQescapeLiteral");
+        bindFunc(cast(void**)&PQescapeIdentifier, "PQescapeIdentifier");
+        bindFunc(cast(void**)&PQescapeByteaConn, "PQescapeByteaConn");
+        bindFunc(cast(void**)&PQunescapeBytea, "PQunescapeBytea");
+        bindFunc(cast(void**)&PQescapeString, "PQescapeString");
+        bindFunc(cast(void**)&PQescapeBytea, "PQescapeBytea");
+        bindFunc(cast(void**)&PQprint, "PQprint");
+        bindFunc(cast(void**)&PQdisplayTuples, "PQdisplayTuples");
+        bindFunc(cast(void**)&PQprintTuples, "PQprintTuples");
+        bindFunc(cast(void**)&lo_open, "lo_open");
+        bindFunc(cast(void**)&lo_close, "lo_close");
+        bindFunc(cast(void**)&lo_read, "lo_read");
+        bindFunc(cast(void**)&lo_write, "lo_write");
+        bindFunc(cast(void**)&lo_lseek, "lo_lseek");
+        bindFunc(cast(void**)&lo_creat, "lo_creat");
+        bindFunc(cast(void**)&lo_create, "lo_create");
+        bindFunc(cast(void**)&lo_tell, "lo_tell");
+        bindFunc(cast(void**)&lo_truncate, "lo_truncate");
+        bindFunc(cast(void**)&lo_unlink, "lo_unlink");
+        bindFunc(cast(void**)&lo_import, "lo_import");
+        bindFunc(cast(void**)&lo_import_with_oid, "lo_import_with_oid");
+        bindFunc(cast(void**)&lo_export, "lo_export");
+        bindFunc(cast(void**)&PQlibVersion, "PQlibVersion");
+        bindFunc(cast(void**)&PQmblen, "PQmblen");
+        bindFunc(cast(void**)&PQdsplen, "PQdsplen");
+        bindFunc(cast(void**)&PQenv2encoding, "PQenv2encoding");
+        bindFunc(cast(void**)&PQencryptPassword, "PQencryptPassword");
+        bindFunc(cast(void**)&pg_char_to_encoding, "pg_char_to_encoding");
+        bindFunc(cast(void**)&pg_encoding_to_char, "pg_encoding_to_char");
+        bindFunc(cast(void**)&pg_valid_server_encoding_id, "pg_valid_server_encoding_id");
+        bindFunc(cast(void**)&PQregisterEventProc, "PQregisterEventProc");
+        bindFunc(cast(void**)&PQsetInstanceData, "PQsetInstanceData");
+        bindFunc(cast(void**)&PQsetSingleRowMode, "PQsetSingleRowMode");
+        bindFunc(cast(void**)&PQconninfo, "PQconninfo");
+        bindFunc(cast(void**)&lo_lseek64, "lo_lseek64");
+        bindFunc(cast(void**)&lo_tell64, "lo_tell64");
+        bindFunc(cast(void**)&lo_truncate64, "lo_truncate64");
     }
 }
 
