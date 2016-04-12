@@ -274,7 +274,7 @@ extern(C) @nogc nothrow {
 
     alias da_PQexec = PGresult* function(PGconn*,const(char)*);
     alias da_PQexecParams = PGresult* function(PGconn*,const(char)*,int,const Oid*,const(ubyte*)*,const int*,const int*,int);
-    alias da_PQprepare = PGresult* function(PGconn*,const(char)*,const(char)*,int,Oid*);
+    alias da_PQprepare = PGresult* function(PGconn*,const(char)*,const(char)*,int,const(Oid)*);
     alias da_PQexecPrepared = PGresult* function(PGconn*,const(char)*,int,const(char*)*,const(int)*,const(int)*,int);
     alias da_PQsendQuery = int function(PGconn*,const(char)*);
     alias da_PQsendQueryParams = int function(PGconn*,const(char)*,int,const Oid*,const(ubyte*)*,const int*,const int*,int);
