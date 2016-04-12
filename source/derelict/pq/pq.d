@@ -334,8 +334,8 @@ extern(C) @nogc nothrow {
 
     alias da_PQdescribePrepared = PGresult* function(PGconn*,const(char)*);
     alias da_PQdescribePortal = PGresult* function(PGconn*,const(char)*);
-    alias da_PQsendDescribePrepared = int function(PGconn*,char*);
-    alias da_PQsendDescribePortal = int function(PGconn*,char*);
+    alias da_PQsendDescribePrepared = int function(PGconn*,const(char)*);
+    alias da_PQsendDescribePortal = int function(PGconn*,const(char)*);
 
     alias da_PQclear = void function(const(PGresult)*);
     alias da_PQfreemem = void function(void*);
