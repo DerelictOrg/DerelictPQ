@@ -257,7 +257,7 @@ extern(C) @nogc nothrow {
     alias da_PQconnectionNeedsPassword = int function(const(PGconn)*);
     alias da_PQconnectionUsedPassword = int function(const(PGconn)*);
     alias da_PQclientEncoding = int function(const(PGconn)*);
-    alias da_PQsetClientEncoding = int function(PGconn*,char*);
+    alias da_PQsetClientEncoding = int function(PGconn*,const(char)*);
 
     alias da_PQgetssl = void* function(PGconn*);
     alias da_PQinitSSL = void function(int);
@@ -273,13 +273,13 @@ extern(C) @nogc nothrow {
     alias da_PQregisterThreadLock = pgthreadlock_t function(pgthreadlock_t);
 
     alias da_PQexec = PGresult* function(PGconn*,const(char)*);
-    alias da_PQexecParams = PGresult* function(PGconn*,const(char)*,int,Oid*,const(char*)*,int*,int*,int);
-    alias da_PQprepare = PGresult* function(PGconn*,char*,char*,int,Oid*);
+    alias da_PQexecParams = PGresult* function(PGconn*,const(char)*,int,const Oid*,const(ubyte*)*,const int*,const int*,int);
+    alias da_PQprepare = PGresult* function(PGconn*,const(char)*,const(char)*,int,const(Oid)*);
     alias da_PQexecPrepared = PGresult* function(PGconn*,const(char)*,int,const(char*)*,const(int)*,const(int)*,int);
     alias da_PQsendQuery = int function(PGconn*,const(char)*);
-    alias da_PQsendQueryParams = int function(PGconn*,const(char)*,int,Oid*,const(char*)*,int*,int*,int);
+    alias da_PQsendQueryParams = int function(PGconn*,const(char)*,int,const Oid*,const(ubyte*)*,const int*,const int*,int);
     alias da_PQsendPrepare = int function(PGconn*,const(char)*,const(char)*,int,Oid*);
-    alias da_PQsendQueryPrepared = int function(PGconn*,const(char)*,int,const(char*)*,int*,int*,int);
+    alias da_PQsendQueryPrepared = int function(PGconn*,const(char)*,int,const(ubyte*)*,const(int)*,const(int)*,int);
     alias da_PQsetSingleRowMode = int function(PGconn*);
     alias da_PQgetResult = PGresult* function(PGconn*);
 
@@ -332,10 +332,10 @@ extern(C) @nogc nothrow {
     alias da_PQnparams = int function(const(PGresult)*);
     alias da_PQparamtype = Oid function(const(PGresult)*,int);
 
-    alias da_PQdescribePrepared = PGresult* function(PGconn*,char*);
-    alias da_PQdescribePortal = PGresult* function(PGconn*,char*);
-    alias da_PQsendDescribePrepared = int function(PGconn*,char*);
-    alias da_PQsendDescribePortal = int function(PGconn*,char*);
+    alias da_PQdescribePrepared = PGresult* function(PGconn*,const(char)*);
+    alias da_PQdescribePortal = PGresult* function(PGconn*,const(char)*);
+    alias da_PQsendDescribePrepared = int function(PGconn*,const(char)*);
+    alias da_PQsendDescribePortal = int function(PGconn*,const(char)*);
 
     alias da_PQclear = void function(const(PGresult)*);
     alias da_PQfreemem = void function(void*);
