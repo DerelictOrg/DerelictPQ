@@ -212,14 +212,14 @@ enum : int {
     PG_DIAG_SOURCE_FILE =       'F',
     PG_DIAG_SOURCE_LINE =       'L',
     PG_DIAG_SOURCE_FUNCTION =   'R'
-}  
+}
 
 extern(C) @nogc nothrow {
     alias da_PQconnectStart = PGconn* function(const(char)*);
     alias da_PQconnectStartParams = PGconn* function(const(char*)*,const(char*)*,int);
     alias da_PQconnectPoll = PostgresPollingStatusType function(PGconn*);
 
-    alias da_PQconnectdb = PGconn* function(const( char )* );
+    alias da_PQconnectdb = PGconn* function(const(char)*);
     alias da_PQconnectdbParams = PGconn* function(const(char*)*,const(char*)*,int);
     alias da_PQsetdbLogin = PGconn* function(const(char)*,const(char)*,const(char)*,const(char)*,const(char)*,const(char)*,const(char)*);
 
@@ -273,11 +273,11 @@ extern(C) @nogc nothrow {
     alias da_PQregisterThreadLock = pgthreadlock_t function(pgthreadlock_t);
 
     alias da_PQexec = PGresult* function(PGconn*,const(char)*);
-    alias da_PQexecParams = PGresult* function(PGconn*,const(char)*,int,const Oid*,const(ubyte*)*,const int*,const int*,int);
+    alias da_PQexecParams = PGresult* function(PGconn*,const(char)*,int,const(Oid)*,const(ubyte*)*,const(int)*,const int*,int);
     alias da_PQprepare = PGresult* function(PGconn*,const(char)*,const(char)*,int,const(Oid)*);
     alias da_PQexecPrepared = PGresult* function(PGconn*,const(char)*,int,const(char*)*,const(int)*,const(int)*,int);
     alias da_PQsendQuery = int function(PGconn*,const(char)*);
-    alias da_PQsendQueryParams = int function(PGconn*,const(char)*,int,const Oid*,const(ubyte*)*,const int*,const int*,int);
+    alias da_PQsendQueryParams = int function(PGconn*,const(char)*,int,const(Oid)*,const(ubyte*)*,const(int)*,const(int)*,int);
     alias da_PQsendPrepare = int function(PGconn*,const(char)*,const(char)*,int,Oid*);
     alias da_PQsendQueryPrepared = int function(PGconn*,const(char)*,int,const(ubyte*)*,const(int)*,const(int)*,int);
     alias da_PQsetSingleRowMode = int function(PGconn*);
