@@ -259,6 +259,12 @@ extern(C) @nogc nothrow {
     alias da_PQclientEncoding = int function(const(PGconn)*);
     alias da_PQsetClientEncoding = int function(PGconn*,const(char)*);
 
+    // The next four are new in 9.5
+    alias da_PQsslInUse = int function(PGconn*);
+    alias da_PQsslStruct = void* function(PGconn*,const(char)*);
+    alias da_PQsslAttribute = const(char)* function(PGconn*,const(char)*);
+    alias da_PQsslAttributeNames = const(char*)* function(PGconn*);
+
     alias da_PQgetssl = void* function(PGconn*);
     alias da_PQinitSSL = void function(int);
     alias da_PQinitOpenSSL = void function(int,int);
@@ -428,6 +434,10 @@ __gshared {
     da_PQconnectionUsedPassword PQconnectionUsedPassword;
     da_PQclientEncoding PQclientEncoding;
     da_PQsetClientEncoding PQsetClientEncoding;
+    da_PQsslInUse PQsslInUse;
+    da_PQsslStruct PQsslStruct;
+    da_PQsslAttribute PQsslAttribute;
+    da_PQsslAttributeNames PQsslAttributeNames;
     da_PQgetssl PQgetssl;
     da_PQinitSSL PQinitSSL;
     da_PQinitOpenSSL PQinitOpenSSL;
@@ -582,6 +592,10 @@ class DerelictPQLoader : SharedLibLoader {
         bindFunc(cast(void**)&PQconnectionUsedPassword, "PQconnectionUsedPassword");
         bindFunc(cast(void**)&PQclientEncoding, "PQclientEncoding");
         bindFunc(cast(void**)&PQsetClientEncoding, "PQsetClientEncoding");
+        bindFunc(cast(void**)&PQsslInUse, "PQsslInUse");
+        bindFunc(cast(void**)&PQsslStruct, "PQsslStruct");
+        bindFunc(cast(void**)&PQsslAttribute, "PQsslAttribute");
+        bindFunc(cast(void**)&PQsslAttributeNames, "PQsslAttributeNames");
         bindFunc(cast(void**)&PQgetssl, "PQgetssl");
         bindFunc(cast(void**)&PQinitSSL, "PQinitSSL");
         bindFunc(cast(void**)&PQinitOpenSSL, "PQinitOpenSSL");
