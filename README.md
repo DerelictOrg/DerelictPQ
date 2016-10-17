@@ -1,7 +1,7 @@
 DerelictPQ
 ==========
 
-A dynamic binding to the [libpq][1] library, versions 9.3 and 9.4, for the D Programming Language.
+A dynamic binding to the [libpq][1] library version 9.5 for the D Programming Language.
 
 Please see the [Derelict documentation][2] for information on how to build DerelictPQ and load libpq at run time. In the meantime, here's some sample code.
 
