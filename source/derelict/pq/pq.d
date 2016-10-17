@@ -106,6 +106,13 @@ enum {
     PQERRORS_VERBOSE
 }
 
+alias PGContextVisibility = int;
+enum{
+    PQSHOW_CONTEXT_NEVER,
+    PQSHOW_CONTEXT_ERRORS,
+    PQSHOW_CONTEXT_ALWAYS
+} ;
+
 alias PGPing = int;
 enum {
     PQPING_OK,
@@ -196,6 +203,7 @@ extern(C) @nogc nothrow {
 // from postgres_ext.h
 enum : int {
     PG_DIAG_SEVERITY =          'S',
+    PG_DIAG_SEVERITY_NONLOCALIZED = 'V', // New in 9.6
     PG_DIAG_SQLSTATE =          'C',
     PG_DIAG_MESSAGE_PRIMARY =   'M',
     PG_DIAG_MESSAGE_DETAIL =    'D',
@@ -270,6 +278,8 @@ extern(C) @nogc nothrow {
     alias da_PQinitOpenSSL = void function(int,int);
 
     alias da_PQsetErrorVerbosity = PGVerbosity function(PGconn*,PGVerbosity);
+    // The next one is new in 9.6
+    alias da_PQsetErrorContextVisibility = PGContextVisibility function(PGconn*,PGContextVisibility);
     alias da_PQtrace = void function(PGconn*,FILE*);
     alias da_PQuntrace = void function(PGconn*);
 
@@ -316,6 +326,8 @@ extern(C) @nogc nothrow {
     alias da_PQresultStatus = ExecStatusType function(const(PGresult)*);
     alias da_PQresStatus = char* function(ExecStatusType);
     alias da_PQresultErrorMessage = char* function(const(PGresult)*);
+    // The next one is new in 9.6
+    alias da_PQresultVerboseErrorMessage = char* function(const(PGresult)*,PGVerbosity,PGContextVisibility);
     alias da_PQresultErrorField = char* function(const(PGresult)*,int);
     alias da_PQntuples = int function(const(PGresult)*);
     alias da_PQnfields = int function(const(PGresult)*);
@@ -442,6 +454,7 @@ __gshared {
     da_PQinitSSL PQinitSSL;
     da_PQinitOpenSSL PQinitOpenSSL;
     da_PQsetErrorVerbosity PQsetErrorVerbosity;
+    da_PQsetErrorContextVisibility PQsetErrorContextVisibility;
     da_PQtrace PQtrace;
     da_PQuntrace PQuntrace;
     da_PQsetNoticeReceiver PQsetNoticeReceiver;
@@ -478,6 +491,7 @@ __gshared {
     da_PQresultStatus PQresultStatus;
     da_PQresStatus PQresStatus;
     da_PQresultErrorMessage PQresultErrorMessage;
+    da_PQresultVerboseErrorMessage PQresultVerboseErrorMessage;
     da_PQresultErrorField PQresultErrorField;
     da_PQntuples PQntuples;
     da_PQnfields PQnfields;
@@ -600,6 +614,7 @@ class DerelictPQLoader : SharedLibLoader {
         bindFunc(cast(void**)&PQinitSSL, "PQinitSSL");
         bindFunc(cast(void**)&PQinitOpenSSL, "PQinitOpenSSL");
         bindFunc(cast(void**)&PQsetErrorVerbosity, "PQsetErrorVerbosity");
+        bindFunc(cast(void**)&PQsetErrorContextVisibility, "PQsetErrorContextVisibility");
         bindFunc(cast(void**)&PQtrace, "PQtrace");
         bindFunc(cast(void**)&PQuntrace, "PQuntrace");
         bindFunc(cast(void**)&PQsetNoticeReceiver, "PQsetNoticeReceiver");
@@ -635,6 +650,7 @@ class DerelictPQLoader : SharedLibLoader {
         bindFunc(cast(void**)&PQresultStatus, "PQresultStatus");
         bindFunc(cast(void**)&PQresStatus, "PQresStatus");
         bindFunc(cast(void**)&PQresultErrorMessage, "PQresultErrorMessage");
+        bindFunc(cast(void**)&PQresultVerboseErrorMessage, "PQresultVerboseErrorMessage");
         bindFunc(cast(void**)&PQresultErrorField, "PQresultErrorField");
         bindFunc(cast(void**)&PQntuples, "PQntuples");
         bindFunc(cast(void**)&PQnfields, "PQnfields");
