@@ -1,0 +1,18 @@
+name "derelict-pq"
+description "A dynamic and static binding to the GLFW 3 library."
+homepage "https://derelictorg.github.io/"
+license "Boost"
+authors "Mike Parker"
+targetType "library"
+targetPath "lib"
+targetName "DerelictPQ"
+
+configuration "derelict-pq-dynamic" {
+    excludedSourceFiles "source/derelict/pq/statfun.d"
+    dependency "derelict-util" version="~>3.0.0-alpha.2"
+}
+
+configuration "derelict-pq-static" {
+    excludedSourceFiles "source/derelict/pq/dynload.d"
+    versions "DerelictPQ_Static"
+}
