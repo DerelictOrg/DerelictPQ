@@ -9,7 +9,7 @@ targetName "DerelictPQ"
 
 configuration "derelict-pq-dynamic" {
     excludedSourceFiles "source/derelict/pq/statfun.d"
-    dependency "derelict-util" version="~>3.0.0-alpha.2"
+    dependency "derelict-util" version="~>3.0.0-beta.1"
 }
 
 configuration "derelict-pq-static" {
