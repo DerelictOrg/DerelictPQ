@@ -1,5 +1,5 @@
 name "derelict-pq"
-description "A dynamic and static binding to the GLFW 3 library."
+description "A dynamic and static binding to libpq."
 homepage "https://derelictorg.github.io/"
 license "Boost"
 authors "Mike Parker"
