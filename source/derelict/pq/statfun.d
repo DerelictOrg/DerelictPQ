@@ -31,7 +31,7 @@ version(DerelictPQ_Static):
 
 public import derelict.pq.types;
 
-extern(System) @nogc nothrow {
+extern(C) @nogc nothrow {
     PGconn* PQconnectStart(const(char)*);
     PGconn* PQconnectStartParams(const(char*)*,const(char*)*,int);
     PostgresPollingStatusType PQconnectPoll(PGconn*);
