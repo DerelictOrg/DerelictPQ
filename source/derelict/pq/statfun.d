@@ -127,7 +127,7 @@ extern(C) @nogc nothrow {
     Oid PQftype(const(PGresult)*,int);
     int PQfsize(const(PGresult)*,int);
     int PQfmod(const(PGresult)*,int);
-    char* PQcmdStatus(const(PGresult)*);
+    char* PQcmdStatus(PGresult*);
     char* PQoidStatus(PGresult*);
     Oid PQoidValue(const(PGresult)*);
     char* PQcmdTuples(PGresult*);

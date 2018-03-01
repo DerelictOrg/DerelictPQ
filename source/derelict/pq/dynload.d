@@ -156,7 +156,7 @@ extern(C) @nogc nothrow {
     alias da_PQftype = Oid function(const(PGresult)*,int);
     alias da_PQfsize = int function(const(PGresult)*,int);
     alias da_PQfmod = int function(const(PGresult)*,int);
-    alias da_PQcmdStatus = char* function(const(PGresult)*);
+    alias da_PQcmdStatus = char* function(PGresult*);
     alias da_PQoidStatus = char* function(PGresult*);
     alias da_PQoidValue = Oid function(const(PGresult)*);
     alias da_PQcmdTuples = char* function(PGresult*);
