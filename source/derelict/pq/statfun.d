@@ -89,7 +89,7 @@ extern(C) @nogc nothrow {
     PGresult* PQexecPrepared(PGconn*,const(char)*,int,const(char*)*,const(int)*,const(int)*,int);
     int PQsendQuery(PGconn*,const(char)*);
     int PQsendQueryParams(PGconn*,const(char)*,int,const(Oid)*,const(ubyte*)*,const(int)*,const(int)*,int);
-    int PQsendPrepare(PGconn*,const(char)*,const(char)*,int,Oid*);
+    int PQsendPrepare(PGconn*,const(char)*,const(char)*,int,const(Oid)*);
     int PQsendQueryPrepared(PGconn*,const(char)*,int,const(ubyte*)*,const(int)*,const(int)*,int);
     int PQsetSingleRowMode(PGconn*);
     PGresult* PQgetResult(PGconn*);
