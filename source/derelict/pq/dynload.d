@@ -110,7 +110,7 @@ extern(C) @nogc nothrow {
     alias da_PQexecPrepared = PGresult* function(PGconn*,const(char)*,int,const(char*)*,const(int)*,const(int)*,int);
     alias da_PQsendQuery = int function(PGconn*,const(char)*);
     alias da_PQsendQueryParams = int function(PGconn*,const(char)*,int,const(Oid)*,const(ubyte*)*,const(int)*,const(int)*,int);
-    alias da_PQsendPrepare = int function(PGconn*,const(char)*,const(char)*,int,Oid*);
+    alias da_PQsendPrepare = int function(PGconn*,const(char)*,const(char)*,int,const(Oid)*);
     alias da_PQsendQueryPrepared = int function(PGconn*,const(char)*,int,const(ubyte*)*,const(int)*,const(int)*,int);
     alias da_PQsetSingleRowMode = int function(PGconn*);
     alias da_PQgetResult = PGresult* function(PGconn*);
@@ -156,7 +156,7 @@ extern(C) @nogc nothrow {
     alias da_PQftype = Oid function(const(PGresult)*,int);
     alias da_PQfsize = int function(const(PGresult)*,int);
     alias da_PQfmod = int function(const(PGresult)*,int);
-    alias da_PQcmdStatus = char* function(const(PGresult)*);
+    alias da_PQcmdStatus = char* function(PGresult*);
     alias da_PQoidStatus = char* function(PGresult*);
     alias da_PQoidValue = Oid function(const(PGresult)*);
     alias da_PQcmdTuples = char* function(PGresult*);
