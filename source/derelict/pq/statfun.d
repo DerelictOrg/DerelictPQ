@@ -27,6 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 module derelict.pq.statfun;
 
+version(Derelict_Static) version = DerelictPQ_Static;
 version(DerelictPQ_Static):
 
 public import derelict.pq.types;
