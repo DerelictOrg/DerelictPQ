@@ -554,6 +554,6 @@ private:
     else static if(Derelict_OS_Mac)
         enum libNames = "libpq.dylib";
     else static if(Derelict_OS_Posix)
-        enum libNames = "libpq.so";
+        enum libNames = "libpq.so.5";
     else
         static assert(0, "Need to implement PostgreSQL libNames for this operating system.");
