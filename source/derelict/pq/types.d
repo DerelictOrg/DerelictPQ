@@ -72,7 +72,10 @@ enum {
     PGRES_NONFATAL_ERROR,
     PGRES_FATAL_ERROR,
     PGRES_COPY_BOTH,
-    PGRES_SINGLE_TUPLE
+    PGRES_SINGLE_TUPLE,
+    PGRES_PIPELINE_SYNC,
+    PGRES_PIPELINE_ABORTED,
+    PGRES_TUPLES_CHUNK
 }
 
 alias PGTransactionStatusType = int;
@@ -104,6 +107,12 @@ enum {
     PQPING_REJECT,
     PQPING_NO_RESPONSE,
     PQPING_NO_ATTEMTP
+}
+
+enum PGpipelineStatus {
+    PQ_PIPELINE_OFF,
+    PQ_PIPELINE_ON,
+    PQ_PIPELINE_ABORTED
 }
 
 struct PGconn;

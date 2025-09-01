@@ -78,6 +78,7 @@ extern(C) @nogc nothrow {
     alias da_PQerrorMessage = char* function(const(PGconn)*);
     alias da_PQsocket = int function(const(PGconn)*);
     alias da_PQbackendPID = int function(const(PGconn)*);
+    alias da_PQpipelineStatus = PGpipelineStatus function(const(PGconn)*);
     alias da_PQconnectionNeedsPassword = int function(const(PGconn)*);
     alias da_PQconnectionUsedPassword = int function(const(PGconn)*);
     alias da_PQclientEncoding = int function(const(PGconn)*);
@@ -117,6 +118,12 @@ extern(C) @nogc nothrow {
 
     alias da_PQisBusy = int function(PGconn*);
     alias da_PQconsumeInput = int function(PGconn*);
+
+    alias da_PQenterPipelineMode = int function(PGconn*);
+    alias da_PQexitPipelineMode = int function(PGconn*);
+    alias da_PQpipelineSync = int function(PGconn*);
+    alias da_PQsendFlushRequest = int function(PGconn*);
+    alias da_PQsendPipelineSync = int function(PGconn*);
 
     alias da_PQnotifies = immutable (PGnotify)* function(PGconn*);
 
@@ -258,6 +265,7 @@ __gshared {
     da_PQerrorMessage PQerrorMessage;
     da_PQsocket PQsocket;
     da_PQbackendPID PQbackendPID;
+    da_PQpipelineStatus PQpipelineStatus;
     da_PQconnectionNeedsPassword PQconnectionNeedsPassword;
     da_PQconnectionUsedPassword PQconnectionUsedPassword;
     da_PQclientEncoding PQclientEncoding;
@@ -288,6 +296,11 @@ __gshared {
     da_PQgetResult PQgetResult;
     da_PQisBusy PQisBusy;
     da_PQconsumeInput PQconsumeInput;
+    da_PQenterPipelineMode PQenterPipelineMode;
+    da_PQexitPipelineMode PQexitPipelineMode;
+    da_PQpipelineSync PQpipelineSync;
+    da_PQsendFlushRequest PQsendFlushRequest;
+    da_PQsendPipelineSync PQsendPipelineSync;
     da_PQnotifies PQnotifies;
     da_PQputCopyData PQputCopyData;
     da_PQputCopyEnd PQputCopyEnd;
@@ -419,6 +432,7 @@ class DerelictPQLoader : SharedLibLoader {
         bindFunc(cast(void**)&PQerrorMessage, "PQerrorMessage");
         bindFunc(cast(void**)&PQsocket, "PQsocket");
         bindFunc(cast(void**)&PQbackendPID, "PQbackendPID");
+        bindFunc(cast(void**)&PQpipelineStatus, "PQpipelineStatus");
         bindFunc(cast(void**)&PQconnectionNeedsPassword, "PQconnectionNeedsPassword");
         bindFunc(cast(void**)&PQconnectionUsedPassword, "PQconnectionUsedPassword");
         bindFunc(cast(void**)&PQclientEncoding, "PQclientEncoding");
@@ -448,6 +462,11 @@ class DerelictPQLoader : SharedLibLoader {
         bindFunc(cast(void**)&PQgetResult, "PQgetResult");
         bindFunc(cast(void**)&PQisBusy, "PQisBusy");
         bindFunc(cast(void**)&PQconsumeInput, "PQconsumeInput");
+        bindFunc(cast(void**)&PQenterPipelineMode, "PQenterPipelineMode");
+        bindFunc(cast(void**)&PQexitPipelineMode, "PQexitPipelineMode");
+        bindFunc(cast(void**)&PQpipelineSync, "PQpipelineSync");
+        bindFunc(cast(void**)&PQsendFlushRequest, "PQsendFlushRequest");
+        bindFunc(cast(void**)&PQsendPipelineSync, "PQsendPipelineSync");
         bindFunc(cast(void**)&PQnotifies, "PQnotifies");
         bindFunc(cast(void**)&PQputCopyData, "PQputCopyData");
         bindFunc(cast(void**)&PQputCopyEnd, "PQputCopyEnd");
