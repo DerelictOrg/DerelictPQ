@@ -49,7 +49,13 @@ enum {
     CONNECTION_AUTH_OK,
     CONNECTION_SETENV,
     CONNECTION_SSL_STARTUP,
-    CONNECTION_NEEDED
+    CONNECTION_NEEDED,
+    CONNECTION_CHECK_WRITABLE,
+    CONNECTION_CONSUME,
+    CONNECTION_GSS_STARTUP,
+    CONNECTION_CHECK_TARGET,
+    CONNECTION_CHECK_STANDBY,
+    CONNECTION_ALLOCATED
 }
 
 alias PostgresPollingStatusType = int;
@@ -116,6 +122,7 @@ enum PGpipelineStatus {
 }
 
 struct PGconn;
+struct PGcancelConn;
 struct PGresult;
 struct PGcancel;
 

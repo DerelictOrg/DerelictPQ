@@ -58,6 +58,16 @@ extern(C) @nogc nothrow {
     alias da_PQresetPoll = PostgresPollingStatusType function(PGconn*);
     alias da_PQreset = void function(PGconn*);
 
+    alias da_PQcancelCreate = PGcancelConn* function(PGconn*);
+    alias da_PQcancelStart = int function(PGcancelConn*);
+    alias da_PQcancelBlocking =  int function(PGcancelConn*);
+    alias da_PQcancelPoll =  PostgresPollingStatusType function(PGcancelConn*);
+    alias da_PQcancelStatus = ConnStatusType function(const(PGcancelConn)*);
+    alias da_PQcancelSocket = int function(const(PGcancelConn)*);
+    alias da_PQcancelErrorMessage = char* function(const(PGcancelConn)*);
+    alias da_PQcancelReset = void function(PGcancelConn*);
+    alias da_PQcancelFinish = void function(PGcancelConn*);
+
     alias da_PQgetCancel = PGcancel* function(PGconn*);
     alias da_PQfreeCancel = void function(PGcancel*);
     alias da_PQcancel = int function(PGcancel*,char*,int);
@@ -246,6 +256,15 @@ __gshared {
     da_PQresetStart PQresetStart;
     da_PQresetPoll PQresetPoll;
     da_PQreset PQreset;
+    da_PQcancelCreate PQcancelCreate;
+    da_PQcancelStart PQcancelStart;
+    da_PQcancelBlocking PQcancelBlocking;
+    da_PQcancelPoll PQcancelPoll;
+    da_PQcancelStatus PQcancelStatus;
+    da_PQcancelSocket PQcancelSocket;
+    da_PQcancelErrorMessage PQcancelErrorMessage;
+    da_PQcancelReset PQcancelReset;
+    da_PQcancelFinish PQcancelFinish;
     da_PQgetCancel PQgetCancel;
     da_PQfreeCancel PQfreeCancel;
     da_PQcancel PQcancel;

@@ -47,6 +47,15 @@ extern(C) @nogc nothrow {
     int PQresetStart(PGconn*);
     PostgresPollingStatusType PQresetPoll(PGconn*);
     void PQreset(PGconn*);
+    PGcancelConn* PQcancelCreate(PGconn*);
+    int PQcancelStart(PGcancelConn*);
+    int PQcancelBlocking(PGcancelConn*);
+    PostgresPollingStatusType PQcancelPoll(PGcancelConn*);
+    ConnStatusType PQcancelStatus(const(PGcancelConn)*);
+    int PQcancelSocket(const(PGcancelConn)*);
+    char* PQcancelErrorMessage(const(PGcancelConn)*);
+    void PQcancelReset(PGcancelConn*);
+    void PQcancelFinish(PGcancelConn*);
     PGcancel* PQgetCancel(PGconn*);
     void PQfreeCancel(PGcancel*);
     int PQcancel(PGcancel*,char*,int);
