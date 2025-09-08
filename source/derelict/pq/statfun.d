@@ -47,6 +47,15 @@ extern(C) @nogc nothrow {
     int PQresetStart(PGconn*);
     PostgresPollingStatusType PQresetPoll(PGconn*);
     void PQreset(PGconn*);
+    PGcancelConn* PQcancelCreate(PGconn*);
+    int PQcancelStart(PGcancelConn*);
+    int PQcancelBlocking(PGcancelConn*);
+    PostgresPollingStatusType PQcancelPoll(PGcancelConn*);
+    ConnStatusType PQcancelStatus(const(PGcancelConn)*);
+    int PQcancelSocket(const(PGcancelConn)*);
+    char* PQcancelErrorMessage(const(PGcancelConn)*);
+    void PQcancelReset(PGcancelConn*);
+    void PQcancelFinish(PGcancelConn*);
     PGcancel* PQgetCancel(PGconn*);
     void PQfreeCancel(PGcancel*);
     int PQcancel(PGcancel*,char*,int);
@@ -66,6 +75,7 @@ extern(C) @nogc nothrow {
     char* PQerrorMessage(const(PGconn)*);
     int PQsocket(const(PGconn)*);
     int PQbackendPID(const(PGconn)*);
+    PGpipelineStatus PQpipelineStatus(const(PGconn)*);
     int PQconnectionNeedsPassword(const(PGconn)*);
     int PQconnectionUsedPassword(const(PGconn)*);
     int PQclientEncoding(const(PGconn)*);
@@ -96,6 +106,11 @@ extern(C) @nogc nothrow {
     PGresult* PQgetResult(PGconn*);
     int PQisBusy(PGconn*);
     int PQconsumeInput(PGconn*);
+    int PQenterPipelineMode(PGconn*);
+    int PQexitPipelineMode(PGconn*);
+    int PQpipelineSync(PGconn*);
+    int PQsendFlushRequest(PGconn*);
+    int PQsendPipelineSync(PGconn*);
     immutable (PGnotify)* PQnotifies(PGconn*);
     int PQputCopyData(PGconn*,const(char)*,int);
     int PQputCopyEnd(PGconn*,const(char)*);
